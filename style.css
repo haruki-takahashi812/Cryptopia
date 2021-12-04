@@ -10,25 +10,18 @@
 html, body {
     min-height: 100vh;
     font-family: 'Roboto Mono', monospace;
+    background-color: #e9e9e9;
 }
 
 .parallax {
-    /* The image used */
-    background-image: url("./img.jpg");
-
-    /* Set a specific height */
+    background-image: url("./img/banner.jpg");
     min-height: 300px;
-
-    /* Create the parallax scrolling effect */
+    /* parallax scrolling effect */
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     box-shadow: inset 0px -8px 10px -8px black;
-}
-
-main {
-    height: 500vh;
 }
 
 h1 {
@@ -104,3 +97,149 @@ nav a:hover {
         font-size: 16px;
     }
 }
+
+main {
+    background-color: #e9e9e9;
+    display: flex; /* to fix collapsing margin issues */
+    flex-direction: column;
+}
+
+.loading {
+    display: block;
+    margin: auto;
+    margin-top: 100px;
+    height: 100px;
+    width: 100px;
+}
+
+
+.pagination {
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+    border-left: 1px solid grey;
+    cursor: pointer;
+}
+
+.pageNumber {
+    height: 35px;
+    width: 35px;
+    background-color: azure;
+    border: 1px solid grey;
+    border-left: unset;
+    display: grid;
+    place-content: center;
+}
+
+.pageNumber:hover {
+    background-color: aquamarine;
+}
+
+.currentPage {
+    background-color: lightgrey;
+    font-weight: bold;
+}
+
+.currentPage:hover {
+    background-color: lightgrey;
+}
+
+.cardsContainer {
+    width: 100%;
+    gap: 25px;
+    padding: 25px 0;
+	display: grid;
+	justify-content: center;
+	grid-template-columns: repeat(auto-fill, 280px);
+	grid-auto-rows: 200px;
+}
+
+.card {
+    overflow: hidden;
+    background-color: white;
+    border-radius: 15px;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 5px 6px rgba(0,0,0,0.15);
+}
+
+.card h2 {
+    font-size: 20px;
+    font-weight: 700;
+    max-width: 200px;
+    position: relative;
+    top: 10px;
+    left: 10px;
+    overflow-wrap: break-word;
+}
+
+.card h3 {
+    font-size: 12px;
+    position: relative;
+    top: 15px;
+    left: 10px;
+    max-width: 270px;
+}
+
+.card button {
+    width: 100px;
+    height: 35px;
+    color: white;
+    background-color: rgb(14, 113, 212);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+}
+
+/* #region || checkbox */
+
+.card input[type="checkbox"] {
+	display: none;
+}
+
+.card label {
+	cursor: pointer;
+	width: 50px;
+	height: 30px;
+	background-color: rgb(196, 196, 196);
+	display: block;
+	border-radius: 100px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.card label:after {
+	content: '';
+	position: absolute;
+	top: 2.5px;
+	left: 2.5px;
+	width: 25px;
+	height: 25px;
+	background-color: #fff;
+	border-radius: 50%;
+	transition: 0.3s;
+}
+
+.card input:checked ~ label {
+	background-color: dodgerblue;
+}
+
+.card input:checked ~ label:after {
+	left: calc(100% - 2.5px);
+	transform: translateX(-100%);
+}
+
+.card label:active:after {
+	transform: translateX(18%);
+}
+
+.card input:checked ~ label:active:after {
+	transform: translateX(-118%);
+}
+
+/* #endregion */
