@@ -1,3 +1,4 @@
+/* #region || root */
 @import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap');
 
@@ -12,6 +13,9 @@ html, body {
     font-family: 'Roboto Mono', monospace;
     background-color: #e9e9e9;
 }
+
+/* #endregion */
+/* #region || header/nav */
 
 .parallax {
     background-image: url("./img/banner.jpg");
@@ -98,6 +102,8 @@ nav a:hover {
     }
 }
 
+/* #endregion */
+
 main {
     background-color: #e9e9e9;
     display: flex; /* to fix collapsing margin issues */
@@ -112,15 +118,88 @@ main {
     width: 100px;
 }
 
+/* #region || search-box */
+
+.search-container {
+    width: 100%;
+    max-width: 600px;
+    background-color: transparent;
+    display: flex;
+}
+
+.search-text-input {
+    height: 35px;
+    padding: 5px;
+    background-color: white;
+    border: none;
+    border: 3px solid dodgerblue;
+    border-right: none;
+    border-radius: 5px 0 0 5px;
+    flex-grow: 1;
+    min-width: 90px;
+    z-index: 1;
+}
+
+.search-text-input:focus {
+    outline: none;
+    border: 3px solid black;
+}
+
+.search-container button {
+    min-height: 35px;
+    min-width: 35px;
+    text-align: center;
+    display: grid;
+    place-content: center;
+    place-items: center;
+    font-size: 18px;
+    color: white;
+    background-color: dodgerblue;
+    cursor: pointer;
+    border: none;
+}
+
+.search-container button:focus {
+    border: 3px solid black;
+}
+
+.search-container .search-btn {
+    border-radius: 0 5px 5px 0;
+}
+
+.search-container .search-mic-btn {
+    border-radius: 100%;
+    margin-left: 5px;
+    transition: font-size 0.3s;  
+}
+
+.search-container .search-mic-btn.listening {
+    font-size: 24px;
+    position: relative;
+}
+
+.search-container .search-mic-btn.listening::before {
+    content: "Listening...";
+    position: absolute;
+    top: 105%;
+    display: block;
+    width: max-content;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.418);
+    border-radius: 7px;
+    padding: 5px;
+    z-index: 100;
+}
+
+/* #endregion */
+/* #region || pagination */
 
 .pagination {
     width: 100%;
-    margin: auto;
     display: flex;
     flex-wrap: wrap;
-    overflow: hidden;
-    border-left: 1px solid grey;
-    cursor: pointer;
+    justify-content: center;
+    justify-items: center;
 }
 
 .pageNumber {
@@ -128,9 +207,10 @@ main {
     width: 35px;
     background-color: azure;
     border: 1px solid grey;
-    border-left: unset;
+    /* border-left: unset; */
     display: grid;
     place-content: center;
+    cursor: pointer;
 }
 
 .pageNumber:hover {
@@ -145,6 +225,9 @@ main {
 .currentPage:hover {
     background-color: lightgrey;
 }
+
+/* #endregion */
+/* #region || cards */
 
 .cardsContainer {
     width: 100%;
@@ -243,3 +326,8 @@ main {
 }
 
 /* #endregion */
+/* #endregion */
+
+
+
+
