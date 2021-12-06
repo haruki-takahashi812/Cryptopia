@@ -16,9 +16,9 @@
 
 <header>
     <nav>
-        <a href="#">Home</a>
-        <a href="#">Page</a>
-        <a href="#">About</a>
+        <a href="#"><span>Home</span></a>
+        <a href="#"><span>Page</span></a>
+        <a href="#"><span>About</span></a>
     </nav>
 </header>
 
@@ -27,18 +27,22 @@
 
 
 <main>
+
     <img class="loading" src="./img/loading.gif" alt="loadingIMG">
-    <button class="fetchBtn">fetch data</button>
+
     <!-- Home page
 
-    <div class="search-container">
-        <input type="text" placeholder="Search by symbol..." class="search-text-input">
-        <button class="search-btn">
-            <i class="fa fa-search"></i>
-        </button>
-        <button class="search-mic-btn">
-            <i class="fa fa-microphone"></i>
-        </button>
+    <div class="search-and-fetchBtn-container">
+        <div class="search-container">
+            <input type="text" placeholder="Search by symbol..." class="search-text-input">
+            <button class="search-btn">
+                <i class="fa fa-search"></i>
+            </button>
+            <button class="search-mic-btn">
+                <i class="fa fa-microphone"></i>
+            </button>
+        </div>
+        <button id="refreshApiBtn"><i class="fa fa-refresh"></i><span class="tooltip">Last refreshed: </span></button>
     </div>
 
     <div class="cardsContainer">

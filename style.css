@@ -66,12 +66,34 @@ nav a {
     font-size: 18px;
 }
 
-nav a:hover {
-    color: black;
-    background: white;
+nav a span {
+    position: relative;
 }
 
-@media (max-width: 700px) {
+/* sliding effect */
+nav a span::before {
+    content: "";
+    position: absolute;
+    background: dodgerblue;
+    width: 100%;
+    height: 10%;
+    bottom: -3px;
+    left: 0;
+    overflow: hidden;
+    transform: scale(0, 1);
+    transform-origin: left;
+    transition: transform 250ms ease-out;
+    z-index: -1;
+}
+
+nav a:hover span:before,
+nav a:focus span:before,
+nav a:active span:before {
+    transform: scale(1, 1);
+}
+
+
+@media (max-width: 675px) {
     h1 {
         left: 50%;
         transform: translatex(-50%);
@@ -118,6 +140,91 @@ main {
     width: 100px;
 }
 
+.search-and-fetchBtn-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding: 25px;
+    align-items: center;
+    align-content: center;
+}
+
+@media (max-width: 640px) {
+    .search-and-fetchBtn-container {
+        flex-direction: column;
+    }
+    .search-and-fetchBtn-container #refreshApiBtn {
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: 400px) {
+    .search-and-fetchBtn-container {
+        padding: 25px 5px;
+    }
+}
+
+/* #region || refresh API button + tooltip */
+#refreshApiBtn {
+    position: relative;
+    min-height: 35px;
+    min-width: 35px;
+    text-align: center;
+    display: grid;
+    place-content: center;
+    place-items: center;
+    font-size: 30px;
+    font-weight: bolder;
+    color: dodgerblue;
+    background-color: transparent;
+    cursor: pointer;
+    border: none;
+    margin: 0 100px;
+    margin-top: 2px;
+}
+
+#refreshApiBtn:focus {
+    border: 3px solid black;
+}
+    
+/* tooltip for refreshApiBtn */
+.tooltip {
+    display: none;
+	opacity: 0;
+	background: black;
+	color: white;
+	min-width: 140px;
+    z-index: 100;
+    font-size: small;
+    font-weight: 300;
+	overflow-wrap: break-word;
+	position: absolute;
+	top: calc(100% + 15px);
+	left: 50%;
+	transform: translatex(-50%);
+	padding: 10px;
+	border-radius: 15px;
+	transition: opacity 0.2s;
+}
+
+/* tooltip triangle */
+.tooltip::before {
+	content: "";
+	position: absolute;
+	top: -9px;
+	left: 50%;
+	transform: translatex(-50%);
+	border-style: solid;
+	border-color: transparent transparent black transparent;
+	border-width: 0 10px 10px 10px;
+}
+
+#refreshApiBtn:hover .tooltip{
+    display: block;
+	opacity: 0.8;
+}
+
+/* #endregion */
 /* #region || search-box */
 
 .search-container {
@@ -138,6 +245,7 @@ main {
     flex-grow: 1;
     min-width: 90px;
     z-index: 1;
+    width: 0;
 }
 
 .search-text-input:focus {
