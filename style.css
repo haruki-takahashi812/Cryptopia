@@ -154,6 +154,11 @@ main {
     align-content: center;
 }
 
+.notFoundH2 {
+    margin: auto;
+    margin-top: 30px;
+}
+
 @media (max-width: 640px) {
     .search-and-fetchBtn-container {
         flex-direction: column;

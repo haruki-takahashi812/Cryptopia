@@ -174,6 +174,11 @@ $(".popup-dark-overlay").click(e => {
 // #endregion
     // #region || search + mic + api-button
 
+/* default checked search values */
+let searchExactMatch = true
+let searchSymbols = true
+let searchNames = false
+
 function createSearchBox() {
     $("main").append(`
     <div class="search-and-fetchBtn-container">
@@ -198,7 +203,7 @@ function createSearchBox() {
                 </div>
             </label>
 
-            <input type="text" placeholder="Search by symbol..." class="search-text-input">
+            <input type="text" placeholder="Search..." class="search-text-input">
             <button class="search-btn">
                 <i class="fa fa-search"></i>
             </button>
@@ -213,6 +218,52 @@ function createSearchBox() {
     </div>
     `)
 
+    if (searchExactMatch) {
+        $("#exactmatch-checkbox").prop("checked", true)
+    } else {
+        $("#exactmatch-checkbox").prop("checked", false)
+    }
+    if (searchSymbols) {
+        $("#symbol-checkbox").prop("checked", true)
+    } else {
+        $("#symbol-checkbox").prop("checked", false)
+    }
+    if (searchNames) {
+        $("#name-checkbox").prop("checked", true)
+    } else {
+        $("#name-checkbox").prop("checked", false)
+    }
+        
+    $("#exactmatch-checkbox").on("change", () => {
+        searchExactMatch = !searchExactMatch
+        previousSearch = ""
+        $(".search-btn").trigger("click")
+    })
+
+    // radio checkboxes
+    $("#symbol-checkbox").on("change", () => {
+        if ($("#name-checkbox").is(':checked')) {
+            searchSymbols = !searchSymbols
+        } else {
+            $("#name-checkbox").prop("checked", true)
+            searchSymbols = !searchSymbols
+            searchNames = !searchNames
+        }
+        previousSearch = ""
+        $(".search-btn").trigger("click")
+    })
+
+    $("#name-checkbox").on("change", () => {
+        if ($("#symbol-checkbox").is(':checked')) {
+            searchNames = !searchNames
+        } else {
+            $("#symbol-checkbox").prop("checked", true)
+            searchNames = !searchNames
+            searchSymbols = !searchSymbols
+        }
+        previousSearch = ""
+        $(".search-btn").trigger("click")
+    })
     
     // #region || search filter
 
@@ -223,9 +274,45 @@ function createSearchBox() {
             return
         }
         previousSearch = $(".search-text-input").val()
-        filteredCoinsData = coinsData.filter(each => {
-            return each.symbol.toLowerCase().includes($(".search-text-input").val().toLowerCase())
-        })
+        
+        // checkbox search filters
+        let exact = $("#exactmatch-checkbox").is(':checked')
+        let symbol = $("#symbol-checkbox").is(':checked')
+        let name = $("#name-checkbox").is(':checked')
+
+        let searchInputValue = $(".search-text-input").val().toLowerCase()
+
+        if (exact) {
+            if (symbol && name ) {
+                filteredCoinsData = coinsData.filter(each => {
+                    return (each.symbol.toLowerCase() == searchInputValue || each.name.toLowerCase() == searchInputValue)
+                })
+            } else if (symbol) {
+                filteredCoinsData = coinsData.filter(each => {
+                    return (each.symbol.toLowerCase() == searchInputValue)
+                })
+            } else {
+                filteredCoinsData = coinsData.filter(each => {
+                    return (each.name.toLowerCase() == searchInputValue)
+                })
+            }
+        } else {
+            if (symbol && name) {
+                filteredCoinsData = coinsData.filter(each => {
+                    return (each.symbol.toLowerCase().includes(searchInputValue) || each.name.toLowerCase().includes(searchInputValue))
+                })
+            } else if (symbol) {
+                filteredCoinsData = coinsData.filter(each => {
+                    return (each.symbol.toLowerCase().includes(searchInputValue))
+                })
+            } else {
+                filteredCoinsData = coinsData.filter(each => {
+                    return (each.name.toLowerCase().includes(searchInputValue))
+                })
+            }
+        }
+
+        // render
         currentPage = 1
         if (!filteredCoinsData.length) {
             $(".cardsContainer").remove()
@@ -328,15 +415,11 @@ fetchData()
 
 /*******************[ TO-DO ]*******************
 
-popup menu -> disable scrolling?
-
-search -> exact match check box on by default
-
 refreshApiBtn hold click mobile
 
 about page
 
-what is 2nd page?
+live reports page
 
 ************************************************/
 
