@@ -84,19 +84,103 @@ function renderCards() {
 }
 
 function createPagination() {
-    const totalPages = Math.ceil(filteredCoinsData.length / coinsPerPage)    
+    let totalPages = Math.ceil(filteredCoinsData.length / coinsPerPage)
     $("main").append(`<div class="pagination"></div>`)
-    for (let i = 1; i < totalPages + 1; i++) {
-        if (i == currentPage) {
-            $(".pagination").append(`<div class="pageNumber currentPage">${i}</div>`)
-            continue
+    
+    let displayAllPages = false;
+
+    if (displayAllPages) {
+        for (let i = 1; i <= totalPages; i++) {
+            if (i == currentPage) {
+                $(".pagination").append(`<div class="pageNumber currentPage">${i}</div>`)
+                continue
+            }
+            $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${i}</div>`)
         }
-        $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${i}</div>`)
+    } else {
+        // my pagination algorithm https://docs.google.com/document/d/199mvUjZvVXJDHeATYpeLyElzaZAjcUAklDHYUVUgKxY/edit?usp=sharing
+        let step = 3
+
+        let mid = step + 3
+        let maximal = step * 2 + 5
+        let f = totalPages
+        let c = currentPage
+
+        if (c == 1) {
+            $(".pagination").append(`<div class="pageNumber previousPage disabled"><i class="fa fa-chevron-left"></i></div>`)
+        } else {
+            $(".pagination").append(`<div class="pageNumber previousPage" onclick="previousPageArrow()"><i class="fa fa-chevron-left"></div>`)
+        }
+        if (f <= maximal) {
+            for (let i = 1; i <= f; i++) {
+                if (i == c) {
+                    $(".pagination").append(`<div class="pageNumber currentPage">${i}</div>`)
+                    continue
+                }
+                $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${i}</div>`)
+            }
+            $(".pagination").append(`<div class="pageNumber nextPage">${i}</div>`)
+        } else if (c <= mid) {
+            for (let i = 1; i <= mid + step; i++) {
+                if (i == c) {
+                    $(".pagination").append(`<div class="pageNumber currentPage">${i}</div>`)
+                    continue
+                }
+                $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${i}</div>`)
+            }
+            $(".pagination").append(`<div class="pageNumber dots">...</div>`)
+            $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${f}</div>`)
+        } else if (c > (f - mid)) {
+            $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">1</div>`)
+            $(".pagination").append(`<div class="pageNumber dots">...</div>`)
+            for (let i = mid + step - 1; i >= 0; i--) {
+                if (f - i == c) {
+                    $(".pagination").append(`<div class="pageNumber currentPage">${f - i}</div>`)
+                    continue
+                }
+                $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${f - i}</div>`)
+            }
+        } else {
+            $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">1</div>`)
+            $(".pagination").append(`<div class="pageNumber dots">...</div>`)
+            for (let i = -(step); i <= step; i++) {
+                console.log(`c: ${typeof(c)}`)
+                if (c + i == c) {
+                    $(".pagination").append(`<div class="pageNumber currentPage">${c + i}</div>`)
+                    continue
+                }
+                $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${c + i}</div>`)
+            }
+            $(".pagination").append(`<div class="pageNumber dots">...</div>`)
+            $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${f}</div>`)
+        }
+        if (c == f) {
+            $(".pagination").append(`<div class="pageNumber nextPage disabled"><i class="fa fa-chevron-right"></div>`)
+        } else {
+            $(".pagination").append(`<div class="pageNumber nextPage" onclick="nextPageArrow()"><i class="fa fa-chevron-right"></div>`)
+        }
     }
+    
 }
 
 function pageChange(e) {
-    currentPage = e.target.innerText
+    currentPage = parseInt(e.target.innerText)
+    $(".cardsContainer").remove()
+    $(".pagination").remove()
+    renderCards()
+    createPagination()
+}
+
+function nextPageArrow() {    
+    currentPage++ 
+    $(".cardsContainer").remove()
+    $(".pagination").remove()
+    renderCards()
+    createPagination()
+}
+
+function previousPageArrow() { 
+    currentPage--
     $(".cardsContainer").remove()
     $(".pagination").remove()
     renderCards()

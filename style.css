@@ -392,6 +392,7 @@ main {
     flex-wrap: wrap;
     justify-content: center;
     justify-items: center;
+    user-select: none;
 }
 
 .pageNumber {
@@ -399,13 +400,12 @@ main {
     width: 35px;
     background-color: azure;
     border: 1px solid grey;
-    /* border-left: unset; */
     display: grid;
     place-content: center;
     cursor: pointer;
 }
 
-.pageNumber:hover {
+.pageNumber:hover:not(.disabled):not(.currentPage):not(.dots) {
     background-color: aquamarine;
 }
 
@@ -415,8 +415,50 @@ main {
     cursor: default;
 }
 
-.currentPage:hover {
+.dots {
+    background-color: transparent;
+    border-color: transparent;
+    font-weight: bold;
+    cursor: default;
+}
+
+.previousPage {
+    margin-right: 4px;
+    border-radius: 100%;
+    padding-top: 1px;
+    padding-right: 2px;
+    font-size: 12px;
+}
+
+.nextPage {
+    margin-left: 4px;
+    border-radius: 100%;
+    padding-top: 1px;
+    padding-left: 2px;
+    font-size: 12px;
+}
+
+.disabled {
+    cursor: default;
     background-color: lightgrey;
+}
+
+@media (max-width: 480px) {
+    .pageNumber {
+        height: 30px;
+        width: 30px;
+    }
+}
+@media (max-width: 400px) {
+    .pageNumber {
+        height: 25px;
+        width: 25px;
+        font-size: 12px;
+    }
+    
+    .previousPage, .nextPage {
+        display: none;
+    }
 }
 
 /* #endregion */
@@ -609,3 +651,4 @@ main {
 
 /* #endregion */
 /* #endregion */
+
