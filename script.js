@@ -25,17 +25,20 @@ function fetchData() {
         console.log(coinsData)
         filteredCoinsData = coinsData
         lastRefreshedApiDate = new Date();
-        if ($(".search-and-fetchBtn-container").length) { // if element exists:
-            $(".loading").remove()
-            renderCards()
-            createPagination()
-            previousSearch = ""
-            $(".search-btn").trigger("click") // keep filter on refresh
-        } else {
-            clearMain()
-            createSearchBox()
-            renderCards()
-            createPagination()
+
+        if (currentWebPage == "home") {
+            if ($(".search-and-fetchBtn-container").length) { // if element exists:
+                $(".loading").remove()
+                // renderCards()
+                // createPagination()
+                previousSearch = ""
+                $(".search-btn").trigger("click") // keeping search filter on refresh
+            } else {
+                clearMain()
+                createSearchBox()
+                renderCards()
+                createPagination()
+            }
         }
     })
 }
@@ -64,10 +67,12 @@ function timePassedSinceFetch(miliseconds) {
 }
 
 function renderCards() {
+    $("main").append(`<div class="cardsContainer"></div>`)
+    if (!filteredCoinsData.length) { // if array is empty:
+        $(".cardsContainer").append(`<h2 class="notFoundH2">No results found. 🙁</h2>`)
+    }
     indexStart = coinsPerPage * (currentPage - 1)
     indexEnd = coinsPerPage * currentPage
-    $(".notFoundH2").remove() // removes h2 which is created when 0 found in search 
-    $("main").append(`<div class="cardsContainer"></div>`)
     for (let i = indexStart; i < indexEnd && i < filteredCoinsData.length; i++) {
         // if 100 per page, currentpage 1: index will loop 0-99 , currentpage 2: index will loop 100-199
         $(".cardsContainer").append(`
@@ -84,6 +89,9 @@ function renderCards() {
 }
 
 function createPagination() {
+    if (!filteredCoinsData.length) { // if array is empty:
+        return
+    }
     let totalPages = Math.ceil(filteredCoinsData.length / coinsPerPage)
     $("main").append(`<div class="pagination"></div>`)
     
@@ -119,7 +127,6 @@ function createPagination() {
                 }
                 $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${i}</div>`)
             }
-            $(".pagination").append(`<div class="pageNumber nextPage">${i}</div>`)
         } else if (c <= mid) {
             for (let i = 1; i <= mid + step; i++) {
                 if (i == c) {
@@ -144,7 +151,6 @@ function createPagination() {
             $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">1</div>`)
             $(".pagination").append(`<div class="pageNumber dots">...</div>`)
             for (let i = -(step); i <= step; i++) {
-                console.log(`c: ${typeof(c)}`)
                 if (c + i == c) {
                     $(".pagination").append(`<div class="pageNumber currentPage">${c + i}</div>`)
                     continue
@@ -301,6 +307,8 @@ function createSearchBox() {
         </button>
     </div>
     `)
+    
+    $(".search-text-input").val(previousSearch)
 
     if (searchExactMatch) {
         $("#exactmatch-checkbox").prop("checked", true)
@@ -354,6 +362,17 @@ function createSearchBox() {
     $(".search-btn").click(searchFilterClick)
 
     function searchFilterClick() {
+        if ($(".search-text-input").val() == "") {
+            // show all coins if search is empty
+            filteredCoinsData = coinsData
+            // render
+            currentPage = 1
+            $(".cardsContainer").remove()
+            $(".pagination").remove()
+            renderCards()
+            createPagination()
+            return
+        }
         if (previousSearch == $(".search-text-input").val()) {
             return
         }
@@ -398,20 +417,11 @@ function createSearchBox() {
 
         // render
         currentPage = 1
-        if (!filteredCoinsData.length) {
-            $(".cardsContainer").remove()
-            $(".pagination").remove()
-            $(".notFoundH2").remove()
-            $("main").append(`<h2 class="notFoundH2">No results found. 🙁</h2>`)
-        } else {
-            $(".cardsContainer").remove()
-            $(".pagination").remove()
-            renderCards()
-            createPagination()
-
-        }
+        $(".cardsContainer").remove()
+        $(".pagination").remove()
+        renderCards()
+        createPagination()
     }
-
     // #endregion
     // #region || speech recognition
 
@@ -491,15 +501,56 @@ fetchData()
 // #endregion
 
 
+let currentWebPage = "home"
 
+$("#home-btn").click(() => {
+    if (currentWebPage == "home") {
+        return
+    }
+    currentWebPage = "home"
+    clearMain()
+    createSearchBox()
+    renderCards()
+    createPagination()
+})
+
+$("#charts-btn").click(() => {
+    if (currentWebPage == "charts") {
+        return
+    }
+    currentWebPage = "charts"
+    clearMain()
+    renderChartsPage()
+})
+
+$("#about-btn").click(() => {
+    if (currentWebPage == "about") {
+        return
+    }
+    currentWebPage = "about"
+    clearMain()
+    renderAboutPage()
+})
+
+function renderChartsPage() {
+    $("main").append(`
+    <h1>This is CHARTS page</h1>
+    
+    `)
+}
+
+function renderAboutPage() {
+    $("main").append(`
+    <h1>This is about page</h1>
+    
+    `)
+}
 
 
 
 
 
 /*******************[ TO-DO ]*******************
-
-refreshApiBtn hold click mobile
 
 about page
 

@@ -135,6 +135,7 @@ main {
     background-color: #e9e9e9;
     display: flex; /* to fix collapsing margin issues */
     flex-direction: column;
+    position: relative;
 }
 
 .loading {
@@ -155,8 +156,10 @@ main {
 }
 
 .notFoundH2 {
-    margin: auto;
     margin-top: 30px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%)
 }
 
 @media (max-width: 640px) {
@@ -360,7 +363,6 @@ main {
 	position: absolute;
 	top: -9px;
 	left: 8%;
-	/* transform: translatex(-50%); */
 	border-style: solid;
 	border-color: transparent transparent black transparent;
 	border-width: 0 10px 10px 10px;
@@ -455,7 +457,7 @@ main {
         width: 25px;
         font-size: 12px;
     }
-    
+
     .previousPage, .nextPage {
         display: none;
     }
