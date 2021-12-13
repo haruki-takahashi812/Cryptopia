@@ -3,8 +3,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap');
 
 :root {
-    --lightblue: rgb(14, 113, 212);
-    --darkblue: rgb(16, 25, 65);
+    --lightblue: #0e71d4;
+    --darkblue: #101941;
 }
 
 * {
@@ -17,6 +17,7 @@ html, body {
     min-height: 100vh;
     font-family: 'Roboto Mono', monospace;
     background-color: #e9e9e9;
+    overflow-x: hidden;
 }
 
 /* #endregion */
@@ -69,6 +70,7 @@ nav a {
     padding: 10px 30px;
     font-weight: 300;
     font-size: 18px;
+    transition: padding 0.2s, font-size 0.2s; /* smooth media-query transition */
 }
 
 nav a span {
@@ -124,7 +126,6 @@ nav a:active span:before {
 
     nav a {
         padding: 10px 20px;
-        font-weight: 300;
         font-size: 16px;
     }
 }
@@ -136,7 +137,12 @@ main {
     display: flex; /* to fix collapsing margin issues */
     flex-direction: column;
     position: relative;
+    /* switching pages animation */
+    transition: left 0.2s, right 0.2s;
+    left: 0;
 }
+
+    /* #region || HOME page */
 
 .loading {
     display: block;
@@ -177,7 +183,7 @@ main {
     }
 }
 
-/* #region || refresh API button + tooltip */
+        /* #region || refresh API button + tooltip */
 #refreshApiBtn {
     position: relative;
     min-height: 35px;
@@ -239,7 +245,7 @@ main {
 }
 
 /* #endregion */
-/* #region || search-box */
+        /* #region || search-box */
 
 .search-container {
     width: 100%;
@@ -314,7 +320,7 @@ main {
     z-index: 100;
 }
 
-/* #region || checkbox drop-down menu */
+            /* #region || checkbox drop-down menu */
 /* checkbox */
 .search-container #search-checkbox {
     display: none;
@@ -386,7 +392,7 @@ main {
 
 /* #endregion */
 /* #endregion */
-/* #region || pagination */
+        /* #region || pagination */
 
 .pagination {
     width: 100%;
@@ -405,6 +411,7 @@ main {
     display: grid;
     place-content: center;
     cursor: pointer;
+    transition: font-size 0.2s, width 0.2s, height 0.2s; /* for smooth media-query transition */
 }
 
 .pageNumber:hover:not(.disabled):not(.currentPage):not(.dots) {
@@ -464,7 +471,7 @@ main {
 }
 
 /* #endregion */
-/* #region || cards */
+        /* #region || cards */
 
 .cardsContainer {
     width: 100%;
@@ -519,7 +526,7 @@ main {
     bottom: 10px;
 }
 
-/* #region || checkbox */
+            /* #region || checkbox */
 
 .card input[type="checkbox"] {
 	display: none;
@@ -568,7 +575,7 @@ main {
 
 /* #endregion */
 /* #endregion */
-/* #region || moreinfo popup */
+        /* #region || moreinfo popup */
 
 .popup-dark-overlay {
     display: none;
@@ -653,4 +660,279 @@ main {
 
 /* #endregion */
 /* #endregion */
+    /* #region || CHARTS Page (live reports) */
 
+
+/* #endregion */
+    /* #region || ABOUT Page */
+
+.about-page-container {
+    width: 100%;
+    max-width: 1800px;
+    min-height: 100vh;
+    box-shadow: 12px 0 20px -4px rgba(0, 0, 0, 0.8), -12px 0 20px -4px rgba(0, 0, 0, 0.8);
+    margin: auto;
+    height: 100%;
+    background: rgb(233,233,233);
+    background: linear-gradient(174deg, rgba(233,233,233,1) 29%, rgba(16,25,65,1) 31%);
+}
+
+@media (min-height: 2000px) {
+    .about-page-container {
+        background: linear-gradient(172deg, rgba(233,233,233,1) 19%, rgba(16,25,65,1) 21%);
+    }    
+}
+
+        /* #region || section 1 */
+
+.about-page-section-1 {
+    padding: 100px;
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: 
+        "text img";
+    transition: padding 0.2s;
+}
+
+.about-page-section-1 .text {
+    grid-area: text;
+}
+
+.about-page-section-1 .crypto-coins-img {
+    grid-area: img;
+    max-height: 350px;
+    transition: max-height 0.2s;
+}
+
+.about-page-section-1 h1 {
+    max-width: 720px;
+    transition: font-size 0.2s;
+}
+
+.about-page-section-1 h2 {
+    max-width: 400px;
+    margin-left: 20px;
+    margin-top: 35px;
+    font-size: 20px;
+    font-weight: 400;
+    transition: font-size 0.2s;
+}
+
+@media (max-width: 1160px) { 
+    .about-page-section-1 {
+        grid-template-columns: 1fr;
+        /* grid-template-rows: 2fr 5fr; */
+        grid-template-rows: 2fr 3fr;
+        grid-template-areas: 
+            "text"
+            "img";
+    }
+
+    .about-page-section-1 .crypto-coins-img {
+        margin-top: 30px;
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 790px) {
+    .about-page-section-1 h1 {
+        font-size: 28px;
+    }
+    
+    .about-page-section-1 h2 {
+        font-size: 18px;
+    }
+
+    .about-page-section-1 .crypto-coins-img {
+        grid-area: img;
+        max-height: 250px;
+    }
+}
+
+@media (max-width: 600px) {
+    .about-page-section-1 {
+        padding: 75px;
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .about-page-section-1 h1 {
+        font-size: 24px;
+        max-width: 600px;
+    }
+    
+    .about-page-section-1 h2 {
+        font-size: 16px;
+    }
+
+    .about-page-section-1 .crypto-coins-img {
+        grid-area: img;
+        max-height: 200px;
+        margin: auto;
+        margin-top: 30px;
+    }
+}
+
+@media (max-width: 500px) {
+    .about-page-section-1 {
+        padding: 65px;
+    }
+
+    .about-page-section-1 h1 {
+        font-size: 22px;
+        max-width: 500px;
+    }
+    
+    .about-page-section-1 h2 {
+        font-size: 14px;
+    }
+
+    .about-page-section-1 .crypto-coins-img {
+        grid-area: img;
+        max-height: 160px;
+    }
+}
+
+@media (max-width: 410px) {
+    .about-page-section-1 {
+        padding: 50px;
+    }
+}
+
+@media (max-width: 350px) {
+    .about-page-section-1 {
+        padding: 10px;
+    }
+}
+
+/* #endregion */
+        /* #region || section 2 */
+
+        
+.about-page-section-2 {
+    padding: 100px;
+    padding-top: 0;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: 1fr 4fr;
+    grid-template-areas: 
+    "title title"
+    "img2 info";
+    transition: padding 0.2s;
+}
+        
+.about-page-section-2 .section-2-title {
+    margin-left: 200px;
+    margin-bottom: 60px;
+    grid-area: title;
+    color: var(--lightblue);
+    font-size: 32px;
+    transform: rotate(-6deg);
+    transition: font-size 0.2s;
+}
+
+.about-page-section-2 .section-2-info {
+    grid-area: info;
+    color: white;
+    margin-top: 50px;
+    margin-left: 30px;
+}
+
+.about-page-section-2 .elon-musk-img {
+    grid-area: img2;
+    max-height: 400px;
+    transition: max-height 0.2s;
+}
+
+.about-page-section-2 p {
+    margin-top: 20px;
+    margin-left: 20px;
+    max-width: 430px;
+    color: #c5c5c5;
+}
+
+@media (max-width: 910px) {
+    .about-page-section-2 {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 6fr 4fr;
+        grid-template-areas: 
+            "title"
+            "img2"
+            "info";
+        justify-items: center;
+    }
+
+    .about-page-section-2 .section-2-title {
+        margin: unset;
+    }
+}
+
+@media (max-width: 600px) {
+    .about-page-section-2 {
+        padding: 75px;
+        padding-top: 0;
+    }
+
+    .about-page-section-2 .section-2-title {
+        font-size: 28px;
+    }
+
+    .about-page-section-2 .elon-musk-img {
+        max-height: 350px;
+    }
+
+    .about-page-section-2 .section-2-info {
+        margin-top: 25px;
+    }
+}
+
+@media (max-width: 500px) {
+    .about-page-section-2 {
+        padding: 65px;
+        padding-top: 0;
+        grid-template-rows: 1fr 4fr 4fr;
+    }
+
+    .about-page-section-2 .section-2-title {
+        font-size: 24px;
+    }
+
+    .about-page-section-2 .elon-musk-img {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 410px) {
+    .about-page-section-2 {
+        padding: 50px;
+        padding-top: 0;
+        grid-template-rows: 1fr 4fr 5fr;
+    }
+
+    .about-page-section-2 .elon-musk-img {
+        max-height: 250px;
+    }
+
+    .about-page-section-2 .section-2-info {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 350px) {
+    .about-page-section-2 {
+        padding: 10px;
+        padding-top: 0;
+        grid-template-rows: 1fr 5fr 6fr;
+    }
+
+    .about-page-section-2 .section-2-title {
+        font-size: 22px;
+    }
+
+    .about-page-section-2 .elon-musk-img {
+        max-height: 250px;
+    }
+}
+/* #endregion */
+/* #endregion */
+/* #endregion */

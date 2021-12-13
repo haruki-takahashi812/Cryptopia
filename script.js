@@ -34,10 +34,7 @@ function fetchData() {
                 previousSearch = ""
                 $(".search-btn").trigger("click") // keeping search filter on refresh
             } else {
-                clearMain()
-                createSearchBox()
-                renderCards()
-                createPagination()
+                renderHomePage()
             }
         }
     })
@@ -191,10 +188,6 @@ function previousPageArrow() {
     $(".pagination").remove()
     renderCards()
     createPagination()
-}
-
-function clearMain() {
-    $("main").html("")
 }
 
 // #endregion
@@ -504,45 +497,87 @@ fetchData()
 let currentWebPage = "home"
 
 $("#home-btn").click(() => {
-    if (currentWebPage == "home") {
+    if (currentWebPage == "home" || currentWebPage == "loading") {
         return
     }
-    currentWebPage = "home"
-    clearMain()
-    createSearchBox()
-    renderCards()
-    createPagination()
+    currentWebPage = "loading"
+    $("main").css("left", "-110vw")
+    setTimeout(() => {
+        currentWebPage = "home"
+        renderHomePage()
+        $("main").css("left", "0")
+    }, 200);
 })
 
 $("#charts-btn").click(() => {
-    if (currentWebPage == "charts") {
+    if (currentWebPage == "charts" || currentWebPage == "loading") {
         return
     }
-    currentWebPage = "charts"
-    clearMain()
-    renderChartsPage()
+    let slidingSide;
+    if (currentWebPage == "home") {
+        slidingSide = "" // slide to the right (positive number)
+    } else {
+        slidingSide = "-" // slide to the left (negative number)
+    }
+    currentWebPage = "loading"
+    $("main").css("left", `${slidingSide}110vw`)
+    setTimeout(() => {
+        currentWebPage = "charts"
+        renderChartsPage()
+        $("main").css("left", "0")
+    }, 200);
 })
 
 $("#about-btn").click(() => {
-    if (currentWebPage == "about") {
+    if (currentWebPage == "about" || currentWebPage == "loading") {
         return
     }
-    currentWebPage = "about"
-    clearMain()
-    renderAboutPage()
+    currentWebPage = "loading"
+    $("main").css("left", "110vw")
+    setTimeout(() => {
+        currentWebPage = "about"
+        renderAboutPage()
+        $("main").css("left", "0")
+    }, 200);
 })
 
+function renderHomePage() {
+    $("main").html("")
+    createSearchBox()
+    renderCards()
+    createPagination()
+}
+
 function renderChartsPage() {
-    $("main").append(`
+    $("main").html(`
     <h1>This is CHARTS page</h1>
     
     `)
 }
 
 function renderAboutPage() {
-    $("main").append(`
-    <h1>This is about page</h1>
-    
+    $("main").html(`
+    <div class="about-page-container">
+        <section class="about-page-section-1">
+            <div class="text">
+                <h1>Cryptopia lists all the latest crypto coins and lets you compare them.</h1>
+                <h2>Select up to 5 coins at the Home page, and see their live comparisons at the Charts page.</h2>
+            </div>
+            <img class="crypto-coins-img" src="./img/coins.png" alt="crypto coins IMG">
+        </section>
+        <section class="about-page-section-2">
+            <h1 class="section-2-title">About the author:</h1>
+            <div class="section-2-info">
+                <h2>Elon musk</h2>
+                <p>
+                    South African-born American entrepreneur and businessman who founded PayPal in 1999, 
+                    SpaceX in 2002 and Tesla Motors in 2003. Musk became a multimillionaire in his late 20s when he sold his 
+                    start-up company, Zip2, to a division of Compaq Computers.
+                </p>
+            </div>
+            <img class="elon-musk-img" src="./img/elonmusk.jpg" alt="Elon Musk IMG">
+        </section>
+    </div>
     `)
 }
 
@@ -551,6 +586,9 @@ function renderAboutPage() {
 
 
 /*******************[ TO-DO ]*******************
+
+
+color currentWebPage diferent
 
 about page
 
