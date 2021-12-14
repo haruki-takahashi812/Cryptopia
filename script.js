@@ -1,8 +1,128 @@
+// #region || web pages navbar
+
+let currentWebPage = "home"
+
+$("#home-btn").click(() => {
+    if (currentWebPage == "home" || currentWebPage == "loading") {
+        return
+    }
+    currentWebPage = "loading"
+    $(".triangle-page-marker").attr('data-current-page', 'home');
+    $("main").css("left", "-110vw") // slide out
+    setTimeout(() => {
+        if ($("html").scrollTop() == 0) {
+            renderHomePage()
+            $("main").css("left", "0") // slide in
+            currentWebPage = "home"
+        } else {
+            $("html").animate({ scrollTop: 0 }, 'fast') // scroll to top
+            setTimeout(() => {
+                renderHomePage()
+                $("main").css("left", "0") // slide in
+                currentWebPage = "home"
+            }, 200)
+        }
+    }, 250)
+})
+
+$("#charts-btn").click(() => {
+    if (currentWebPage == "charts" || currentWebPage == "loading") {
+        return
+    }
+    let slidingSide;
+    if (currentWebPage == "home") {
+        slidingSide = "" // slide to the right (positive number)
+    } else {
+        slidingSide = "-" // slide to the left (negative number)
+    }
+    currentWebPage = "loading"
+    $(".triangle-page-marker").attr('data-current-page', 'charts');
+    $("main").css("left", `${slidingSide}110vw`)
+    setTimeout(() => {
+        if ($("html").scrollTop() == 0) {
+            renderChartsPage()
+            $("main").css("left", "0")
+            currentWebPage = "charts"
+        } else {
+            $("html").animate({ scrollTop: 0 }, 'fast')
+            setTimeout(() => {
+                renderChartsPage()
+                $("main").css("left", "0")
+                currentWebPage = "charts"
+            }, 200)
+        }
+    }, 250)
+})
+
+$("#about-btn").click(() => {
+    if (currentWebPage == "about" || currentWebPage == "loading") {
+        return
+    }
+    currentWebPage = "loading"
+    $(".triangle-page-marker").attr('data-current-page', 'about');
+    $("main").css("left", "110vw")
+    setTimeout(() => {
+        if ($("html").scrollTop() == 0) {
+            renderAboutPage()
+            $("main").css("left", "0")
+            currentWebPage = "about"
+        } else {
+            $("html").animate({ scrollTop: 0 }, 'fast')
+            setTimeout(() => {
+                renderAboutPage()
+                $("main").css("left", "0")
+                currentWebPage = "about"
+            }, 200)
+        }
+    }, 250)
+})
+
+function renderHomePage() {
+    $("main").html("")
+    createSearchBox()
+    renderCards()
+    createPagination()
+}
+
+function renderChartsPage() {
+    $("main").html(`
+    <h1>This is CHARTS page</h1>
+    
+    `)
+}
+
+function renderAboutPage() {
+    $("main").html(`
+    <div class="about-page-container">
+        <section class="about-page-section-1">
+            <div class="text">
+                <h1>Cryptopia lists all the latest crypto coins and lets you compare them.</h1>
+                <h2>Select up to 5 coins at the Home page, and see their live comparisons at the Charts page.</h2>
+            </div>
+            <img class="crypto-coins-img" src="./img/coins.png" alt="crypto coins IMG">
+        </section>
+        <section class="about-page-section-2">
+            <h1 class="section-2-title">About the author:</h1>
+            <div class="section-2-info">
+                <h2>Elon musk</h2>
+                <p>
+                    South African-born American entrepreneur and businessman who founded PayPal in 1999, 
+                    SpaceX in 2002 and Tesla Motors in 2003. Musk became a multimillionaire in his late 20s when he sold his 
+                    start-up company, Zip2, to a division of Compaq Computers.
+                </p>
+            </div>
+            <img class="elon-musk-img" src="./img/elonmusk.jpg" alt="Elon Musk IMG">
+        </section>
+    </div>
+    `)
+}
+
+// #endregion
 // #region || homepage
     // #region || fetching, rendering, pagination 
 let coinsData;
 let filteredCoinsData;
-let currentPage = 1
+let currentCoinsPage = 1
 let coinsPerPage = 100
 let previousSearch;
 let lastRefreshedApiDate;
@@ -14,7 +134,6 @@ function fetchData() {
         $(".cardsContainer").remove()
         $(".pagination").remove()
         $("main").append(`<img class="loading" src="./img/loading.gif" alt="loadingIMG">`)
-        console.log("added loading image")
     }
     
     // const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&page=1&per_page=10"
@@ -68,8 +187,8 @@ function renderCards() {
     if (!filteredCoinsData.length) { // if array is empty:
         $(".cardsContainer").append(`<h2 class="notFoundH2">No results found. 🙁</h2>`)
     }
-    indexStart = coinsPerPage * (currentPage - 1)
-    indexEnd = coinsPerPage * currentPage
+    indexStart = coinsPerPage * (currentCoinsPage - 1)
+    indexEnd = coinsPerPage * currentCoinsPage
     for (let i = indexStart; i < indexEnd && i < filteredCoinsData.length; i++) {
         // if 100 per page, currentpage 1: index will loop 0-99 , currentpage 2: index will loop 100-199
         $(".cardsContainer").append(`
@@ -96,11 +215,11 @@ function createPagination() {
 
     if (displayAllPages) {
         for (let i = 1; i <= totalPages; i++) {
-            if (i == currentPage) {
-                $(".pagination").append(`<div class="pageNumber currentPage">${i}</div>`)
+            if (i == currentCoinsPage) {
+                $(".pagination").append(`<div class="page-number current-coins-page">${i}</div>`)
                 continue
             }
-            $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${i}</div>`)
+            $(".pagination").append(`<div onclick="pageChange(event)" class="page-number">${i}</div>`)
         }
     } else {
         // my pagination algorithm https://docs.google.com/document/d/199mvUjZvVXJDHeATYpeLyElzaZAjcUAklDHYUVUgKxY/edit?usp=sharing
@@ -109,65 +228,65 @@ function createPagination() {
         let mid = step + 3
         let maximal = step * 2 + 5
         let f = totalPages
-        let c = currentPage
+        let c = currentCoinsPage
 
         if (c == 1) {
-            $(".pagination").append(`<div class="pageNumber previousPage disabled"><i class="fa fa-chevron-left"></i></div>`)
+            $(".pagination").append(`<div class="page-number previous-page disabled"><i class="fa fa-chevron-left"></i></div>`)
         } else {
-            $(".pagination").append(`<div class="pageNumber previousPage" onclick="previousPageArrow()"><i class="fa fa-chevron-left"></div>`)
+            $(".pagination").append(`<div class="page-number previous-page" onclick="previousPageArrow()"><i class="fa fa-chevron-left"></div>`)
         }
         if (f <= maximal) {
             for (let i = 1; i <= f; i++) {
                 if (i == c) {
-                    $(".pagination").append(`<div class="pageNumber currentPage">${i}</div>`)
+                    $(".pagination").append(`<div class="page-number current-coins-page">${i}</div>`)
                     continue
                 }
-                $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${i}</div>`)
+                $(".pagination").append(`<div onclick="pageChange(event)" class="page-number">${i}</div>`)
             }
         } else if (c <= mid) {
             for (let i = 1; i <= mid + step; i++) {
                 if (i == c) {
-                    $(".pagination").append(`<div class="pageNumber currentPage">${i}</div>`)
+                    $(".pagination").append(`<div class="page-number current-coins-page">${i}</div>`)
                     continue
                 }
-                $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${i}</div>`)
+                $(".pagination").append(`<div onclick="pageChange(event)" class="page-number">${i}</div>`)
             }
-            $(".pagination").append(`<div class="pageNumber dots">...</div>`)
-            $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${f}</div>`)
+            $(".pagination").append(`<div class="page-number dots">...</div>`)
+            $(".pagination").append(`<div onclick="pageChange(event)" class="page-number">${f}</div>`)
         } else if (c > (f - mid)) {
-            $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">1</div>`)
-            $(".pagination").append(`<div class="pageNumber dots">...</div>`)
+            $(".pagination").append(`<div onclick="pageChange(event)" class="page-number">1</div>`)
+            $(".pagination").append(`<div class="page-number dots">...</div>`)
             for (let i = mid + step - 1; i >= 0; i--) {
                 if (f - i == c) {
-                    $(".pagination").append(`<div class="pageNumber currentPage">${f - i}</div>`)
+                    $(".pagination").append(`<div class="page-number current-coins-page">${f - i}</div>`)
                     continue
                 }
-                $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${f - i}</div>`)
+                $(".pagination").append(`<div onclick="pageChange(event)" class="page-number">${f - i}</div>`)
             }
         } else {
-            $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">1</div>`)
-            $(".pagination").append(`<div class="pageNumber dots">...</div>`)
+            $(".pagination").append(`<div onclick="pageChange(event)" class="page-number">1</div>`)
+            $(".pagination").append(`<div class="page-number dots">...</div>`)
             for (let i = -(step); i <= step; i++) {
                 if (c + i == c) {
-                    $(".pagination").append(`<div class="pageNumber currentPage">${c + i}</div>`)
+                    $(".pagination").append(`<div class="page-number current-coins-page">${c + i}</div>`)
                     continue
                 }
-                $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${c + i}</div>`)
+                $(".pagination").append(`<div onclick="pageChange(event)" class="page-number">${c + i}</div>`)
             }
-            $(".pagination").append(`<div class="pageNumber dots">...</div>`)
-            $(".pagination").append(`<div onclick="pageChange(event)" class="pageNumber">${f}</div>`)
+            $(".pagination").append(`<div class="page-number dots">...</div>`)
+            $(".pagination").append(`<div onclick="pageChange(event)" class="page-number">${f}</div>`)
         }
         if (c == f) {
-            $(".pagination").append(`<div class="pageNumber nextPage disabled"><i class="fa fa-chevron-right"></div>`)
+            $(".pagination").append(`<div class="page-number next-page disabled"><i class="fa fa-chevron-right"></div>`)
         } else {
-            $(".pagination").append(`<div class="pageNumber nextPage" onclick="nextPageArrow()"><i class="fa fa-chevron-right"></div>`)
+            $(".pagination").append(`<div class="page-number next-page" onclick="nextPageArrow()"><i class="fa fa-chevron-right"></div>`)
         }
     }
     
 }
 
 function pageChange(e) {
-    currentPage = parseInt(e.target.innerText)
+    currentCoinsPage = parseInt(e.target.innerText)
     $(".cardsContainer").remove()
     $(".pagination").remove()
     renderCards()
@@ -175,7 +294,7 @@ function pageChange(e) {
 }
 
 function nextPageArrow() {    
-    currentPage++ 
+    currentCoinsPage++ 
     $(".cardsContainer").remove()
     $(".pagination").remove()
     renderCards()
@@ -183,7 +302,7 @@ function nextPageArrow() {
 }
 
 function previousPageArrow() { 
-    currentPage--
+    currentCoinsPage--
     $(".cardsContainer").remove()
     $(".pagination").remove()
     renderCards()
@@ -359,7 +478,7 @@ function createSearchBox() {
             // show all coins if search is empty
             filteredCoinsData = coinsData
             // render
-            currentPage = 1
+            currentCoinsPage = 1
             $(".cardsContainer").remove()
             $(".pagination").remove()
             renderCards()
@@ -409,7 +528,7 @@ function createSearchBox() {
         }
 
         // render
-        currentPage = 1
+        currentCoinsPage = 1
         $(".cardsContainer").remove()
         $(".pagination").remove()
         renderCards()
@@ -477,9 +596,7 @@ $(document).on("keydown", function(e) {
                 $(".search-text-input").blur()
             }
         }
-        console.log("made it 1")
         if ($(".popup-dark-overlay").css('display') != 'none') {
-            console.log("made it 2")
             closePopupMenu()
         }
     }
@@ -492,95 +609,6 @@ $(document).on("keydown", function(e) {
 fetchData()
 
 // #endregion
-
-
-let currentWebPage = "home"
-
-$("#home-btn").click(() => {
-    if (currentWebPage == "home" || currentWebPage == "loading") {
-        return
-    }
-    currentWebPage = "loading"
-    $("main").css("left", "-110vw")
-    setTimeout(() => {
-        currentWebPage = "home"
-        renderHomePage()
-        $("main").css("left", "0")
-    }, 200);
-})
-
-$("#charts-btn").click(() => {
-    if (currentWebPage == "charts" || currentWebPage == "loading") {
-        return
-    }
-    let slidingSide;
-    if (currentWebPage == "home") {
-        slidingSide = "" // slide to the right (positive number)
-    } else {
-        slidingSide = "-" // slide to the left (negative number)
-    }
-    currentWebPage = "loading"
-    $("main").css("left", `${slidingSide}110vw`)
-    setTimeout(() => {
-        currentWebPage = "charts"
-        renderChartsPage()
-        $("main").css("left", "0")
-    }, 200);
-})
-
-$("#about-btn").click(() => {
-    if (currentWebPage == "about" || currentWebPage == "loading") {
-        return
-    }
-    currentWebPage = "loading"
-    $("main").css("left", "110vw")
-    setTimeout(() => {
-        currentWebPage = "about"
-        renderAboutPage()
-        $("main").css("left", "0")
-    }, 200);
-})
-
-function renderHomePage() {
-    $("main").html("")
-    createSearchBox()
-    renderCards()
-    createPagination()
-}
-
-function renderChartsPage() {
-    $("main").html(`
-    <h1>This is CHARTS page</h1>
-    
-    `)
-}
-
-function renderAboutPage() {
-    $("main").html(`
-    <div class="about-page-container">
-        <section class="about-page-section-1">
-            <div class="text">
-                <h1>Cryptopia lists all the latest crypto coins and lets you compare them.</h1>
-                <h2>Select up to 5 coins at the Home page, and see their live comparisons at the Charts page.</h2>
-            </div>
-            <img class="crypto-coins-img" src="./img/coins.png" alt="crypto coins IMG">
-        </section>
-        <section class="about-page-section-2">
-            <h1 class="section-2-title">About the author:</h1>
-            <div class="section-2-info">
-                <h2>Elon musk</h2>
-                <p>
-                    South African-born American entrepreneur and businessman who founded PayPal in 1999, 
-                    SpaceX in 2002 and Tesla Motors in 2003. Musk became a multimillionaire in his late 20s when he sold his 
-                    start-up company, Zip2, to a division of Compaq Computers.
-                </p>
-            </div>
-            <img class="elon-musk-img" src="./img/elonmusk.jpg" alt="Elon Musk IMG">
-        </section>
-    </div>
-    `)
-}
-
 
 
 

@@ -17,9 +17,10 @@
 <!-- #region || header -->
 <header>
     <nav>
-        <a href="#" id="home-btn"><span>Home</span></a>
-        <a href="#" id="charts-btn"><span>Charts</span></a>
-        <a href="#" id="about-btn"><span>About</span></a>
+        <div class="triangle-page-marker" data-current-page="home"></div>
+        <button id="home-btn"><span>Home</span></button>
+        <button id="charts-btn"><span>Charts</span></button>
+        <button id="about-btn"><span>About</span></button>
     </nav>
 </header>
 <div class="parallax-img"></div>
@@ -27,62 +28,8 @@
 <!-- #endregion -->
 
 <main>
-
     <img class="loading" src="./img/loading.gif" alt="loadingIMG">
-
-    <!-- HOME PAGE
-
-    <div class="search-and-fetchBtn-container">
-        <div class="search-container">
-            <input type="checkbox" id="search-checkbox">
-            <label for="search-checkbox" class="search-label">
-                <i class="fa fa-chevron-down"></i>
-                <div class="search-dropdown-menu" onclick="if (event.target === event.currentTarget){event.preventDefault()}">
-                    <div class="flex-row">
-                        <input type="checkbox" id="exactmatch-checkbox">
-                        <label for="exactmatch-checkbox" class="exactmatch-label">Exact Match</label>
-                    </div>
-                    <div class="flex-row">
-                        <input type="checkbox" id="symbol-checkbox">
-                        <label for="symbol-checkbox" class="symbol-label">Search Symbols</label>
-                    </div>
-                    <div class="flex-row">
-                        <input type="checkbox" id="name-checkbox">
-                        <label for="name-checkbox" class="name-label">Search Names</label>
-                    </div>
-                </div>
-            </label>
-            <input type="text" placeholder="Search..." class="search-text-input">
-            <button class="search-btn">
-                <i class="fa fa-search"></i>
-            </button>
-            <button class="search-mic-btn">
-                <i class="fa fa-microphone"></i>
-            </button>
-        </div>
-        <button id="refreshApiBtn" onclick="fetchData()" onmouseover="timePassedSinceFetch(Math.abs((new Date()) - lastRefreshedApiDate))">
-            <i class="fa fa-refresh"></i>
-            <span class="tooltip">Last refreshed: </span>
-        </button>
-    </div>
-
-    <div class="cardsContainer">
-        <div class="card">
-            <h2>4. <span class="symbol">BTC</span></h2>
-            <h3>Bitcoin</h3>
-            <button onclick="moreInfoBtn(event)">More Info</button>
-            <input type="checkbox" id="checkbox5"/>
-            <label for="checkbox${i}"></label>
-        </div>
-    </div>
-
-    <div class="pagination">
-        <div class="pageNumber currentPage">1</div>
-        <div class="pageNumber">2</div>
-        <div class="pageNumber">3</div>
-    </div>
-
-    -->
+    <!-- JS -->            
 </main>
 
 <!-- More Info Popup -->
@@ -95,12 +42,7 @@
             </button>
         </div>
         <div class="popup-body">
-            <!-- JS -->
-            <!-- loading: -->
-            <!-- <img class="loading" src="./img/loading.gif" alt="loadingIMG"> -->
-            
-            <!-- loaded: -->
-            
+            <!-- JS -->            
         </div>
     </div>
 </div>

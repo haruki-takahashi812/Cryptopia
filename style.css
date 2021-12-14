@@ -63,22 +63,49 @@ nav {
     justify-content: space-between;
 }
 
-nav a {
+nav .triangle-page-marker {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid white;
+    top: 0;
+    margin-left: 45px; /* home page */
+    transition: margin 300ms;
+}
+
+nav .triangle-page-marker[data-current-page="charts"] {
+    margin-left: 159px; 
+}
+
+nav .triangle-page-marker[data-current-page="about"] {
+    margin-left: 279px; 
+}
+
+nav button {
     display: block;
-    text-decoration: none;
+    font-family: 'Roboto Mono', monospace;
+    cursor: pointer;
     color: white;
     padding: 10px 30px;
     font-weight: 300;
     font-size: 18px;
     transition: padding 0.2s, font-size 0.2s; /* smooth media-query transition */
+    border: none;
+    background: transparent;
 }
 
-nav a span {
+nav button .current-web-page {
+    color: cyan;
+}
+
+nav button span {
     position: relative;
 }
 
 /* sliding effect */
-nav a span::before {
+nav button span::before {
     content: "";
     position: absolute;
     background: dodgerblue;
@@ -93,9 +120,9 @@ nav a span::before {
     z-index: -1;
 }
 
-nav a:hover span:before,
-nav a:focus span:before,
-nav a:active span:before {
+nav button:hover span:before,
+nav button:focus span:before,
+nav button:active span:before {
     transform: scale(1, 1);
 }
 
@@ -124,7 +151,19 @@ nav a:active span:before {
         font-size: 30px;
     }
 
-    nav a {
+    nav .triangle-page-marker {
+        margin-left: 32px; /* home page */
+    }
+    
+    nav .triangle-page-marker[data-current-page="charts"] {
+        margin-left: 120px; 
+    }
+    
+    nav .triangle-page-marker[data-current-page="about"] {
+        margin-left: 214px; 
+    }
+
+    nav button {
         padding: 10px 20px;
         font-size: 16px;
     }
@@ -138,7 +177,7 @@ main {
     flex-direction: column;
     position: relative;
     /* switching pages animation */
-    transition: left 0.2s, right 0.2s;
+    transition: left 0.2s;
     left: 0;
 }
 
@@ -403,7 +442,7 @@ main {
     user-select: none;
 }
 
-.pageNumber {
+.page-number {
     height: 35px;
     width: 35px;
     background-color: azure;
@@ -414,11 +453,11 @@ main {
     transition: font-size 0.2s, width 0.2s, height 0.2s; /* for smooth media-query transition */
 }
 
-.pageNumber:hover:not(.disabled):not(.currentPage):not(.dots) {
+.page-number:hover:not(.disabled):not(.current-coins-page):not(.dots) {
     background-color: aquamarine;
 }
 
-.currentPage {
+.current-coins-page {
     background-color: lightgrey;
     font-weight: bold;
     cursor: default;
@@ -431,7 +470,7 @@ main {
     cursor: default;
 }
 
-.previousPage {
+.previous-page {
     margin-right: 4px;
     border-radius: 100%;
     padding-top: 1px;
@@ -439,7 +478,7 @@ main {
     font-size: 12px;
 }
 
-.nextPage {
+.next-page {
     margin-left: 4px;
     border-radius: 100%;
     padding-top: 1px;
@@ -453,19 +492,19 @@ main {
 }
 
 @media (max-width: 480px) {
-    .pageNumber {
+    .page-number {
         height: 30px;
         width: 30px;
     }
 }
 @media (max-width: 400px) {
-    .pageNumber {
+    .page-number {
         height: 25px;
         width: 25px;
         font-size: 12px;
     }
 
-    .previousPage, .nextPage {
+    .previous-page, .next-page {
         display: none;
     }
 }
@@ -670,7 +709,8 @@ main {
     width: 100%;
     max-width: 1800px;
     min-height: 100vh;
-    box-shadow: 12px 0 20px -4px rgba(0, 0, 0, 0.8), -12px 0 20px -4px rgba(0, 0, 0, 0.8);
+    box-shadow: 13px 0 15px -10px rgba(0,0,0,0.7),
+               -13px 0 15px -10px rgba(0,0,0,0.7);
     margin: auto;
     height: 100%;
     background: rgb(233,233,233);
@@ -810,24 +850,23 @@ main {
 
         
 .about-page-section-2 {
-    padding: 100px;
-    padding-top: 0;
+    padding: 0 100px;
     display: grid;
     grid-template-columns: 1fr 2fr;
     grid-template-rows: 1fr 4fr;
     grid-template-areas: 
     "title title"
     "img2 info";
-    transition: padding 0.2s;
+    transition: padding 250ms;
 }
         
 .about-page-section-2 .section-2-title {
     margin-left: 200px;
-    margin-bottom: 60px;
+    margin-bottom: 100px;
     grid-area: title;
     color: var(--lightblue);
     font-size: 32px;
-    transform: rotate(-6deg);
+    transform: rotate(-7deg);
     transition: font-size 0.2s;
 }
 
