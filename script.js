@@ -9,6 +9,7 @@ $("#home-btn").click(() => {
     currentWebPage = "loading"
     $(".triangle-page-marker").attr('data-current-page', 'home');
     $("main").css("left", "-110vw") // slide out
+    clearInterval(myInterval) // from graph
     setTimeout(() => {
         if ($("html").scrollTop() == 0) {
             renderHomePage()
@@ -38,6 +39,7 @@ $("#charts-btn").click(() => {
     currentWebPage = "loading"
     $(".triangle-page-marker").attr('data-current-page', 'charts');
     $("main").css("left", `${slidingSide}110vw`)
+    clearInterval(myInterval) // from graph
     setTimeout(() => {
         if ($("html").scrollTop() == 0) {
             renderChartsPage()
@@ -61,6 +63,7 @@ $("#about-btn").click(() => {
     currentWebPage = "loading"
     $(".triangle-page-marker").attr('data-current-page', 'about');
     $("main").css("left", "110vw")
+    clearInterval(myInterval) // from graph
     setTimeout(() => {
         if ($("html").scrollTop() == 0) {
             renderAboutPage()
@@ -86,9 +89,16 @@ function renderHomePage() {
 
 function renderChartsPage() {
     $("main").html(`
-    <h1>This is CHARTS page</h1>
-    
+    <div class="chart-container">
+        <div class="chart">
+            <canvas id="myChart"></canvas>
+        </div>
+        <button id="create-graph-btn">Reload Graph</button>
+        <button id="stop-interval-btn">Stop Interval</button>
+    </div>
     `)
+    $("#create-graph-btn").click(createGraph)
+    createGraph()
 }
 
 function renderAboutPage() {
@@ -105,16 +115,126 @@ function renderAboutPage() {
             <h1 class="section-2-title">About the author:</h1>
             <div class="section-2-info">
                 <h2>Elon musk</h2>
-                <p>
+                <div class="p">
                     South African-born American entrepreneur and businessman who founded PayPal in 1999, 
                     SpaceX in 2002 and Tesla Motors in 2003. Musk became a multimillionaire in his late 20s when he sold his 
                     start-up company, Zip2, to a division of Compaq Computers.
-                </p>
+                    <div class="icons">
+                        <a target="_blank" href="https://www.facebook.com/groups/ElonMusk/"><i class="fa fa-facebook"></i></a>
+                        <a target="_blank" href="https://twitter.com/elonmusk"><i class="fa fa-twitter"></i></a>
+                        <a target="_blank" href="https://www.instagram.com/elonmusk/"><i class="fa fa-instagram"></i></a>    
+                    </div>
+                </div>
             </div>
             <img class="elon-musk-img" src="./img/elonmusk.jpg" alt="Elon Musk IMG">
         </section>
     </div>
     `)
+}
+
+// #endregion
+// #region || charts page
+
+let chart = undefined;
+let myInterval;
+
+function createGraph() {
+    clearInterval(myInterval)
+
+    let timeNow = new Date().toISOString().slice(14,19) // mm:ss
+    
+    // x-axis
+    let labels = [
+        timeNow,
+    ];
+    
+    let data = {
+        labels,
+        // y-axis
+        datasets: [
+            {
+            label: "something1",
+            backgroundColor: 'white', // points color
+            borderColor: 'blue', // line color
+            data: [123, 432, 120, 14, 1023, 500, 344],
+            },
+            {
+            label: "something2",
+            backgroundColor: 'white',
+            borderColor: 'limegreen',
+            data: [323, 132, 220, 124, 23, 400, 144],
+            },
+            {
+            label: "something3",
+            backgroundColor: 'white',
+            borderColor: 'red',
+            data: [400, 300, 200, 400, 800, 1000, 354],
+            },
+        ]
+    }
+
+    const config = {
+        type: "line",
+        data: data,
+        options: {
+            animation: false,
+            elements: {
+                point: {
+                    radius: 2,
+                },
+                line: {
+                    borderWidth: 1,
+                }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value){
+                            return "$" + value + "m";
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: "Coin Value",
+                    },
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: "Time (mm:ss)",
+                    },
+                },
+            },
+            plugins: {
+                legend: {
+                    position:"right",
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: "rectRounded",
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Live Chart'
+                }
+            }
+        }
+    }
+    
+    // if chart exists, delete it
+    if (typeof chart == "object") {
+        chart.destroy()
+    }
+    chart = new Chart($("#myChart"), config);
+
+    myInterval = setInterval(() => {
+        let timeNow = new Date().toISOString().slice(14,19) // mm:ss
+        labels.push(`${timeNow}`)
+        console.log(labels)
+        chart.update()
+    }, 2000);
+    
+    $("#stop-interval-btn").click(()=>{clearInterval(myInterval)})
 }
 
 // #endregion
@@ -610,17 +730,4 @@ fetchData()
 
 // #endregion
 
-
-
-
-/*******************[ TO-DO ]*******************
-
-
-color currentWebPage diferent
-
-about page
-
-live reports page
-
-************************************************/
 
