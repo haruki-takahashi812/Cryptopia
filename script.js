@@ -7,7 +7,7 @@ $("#home-btn").click(() => {
         return
     }
     currentWebPage = "loading"
-    $(".triangle-page-marker").attr('data-current-page', 'home');
+    $(".triangle-page-marker").attr('data-current-page', 'home')
     $("main").css("left", "-110vw") // slide out
     clearInterval(myInterval) // from graph
     setTimeout(() => {
@@ -37,7 +37,7 @@ $("#charts-btn").click(() => {
         slidingSide = "-" // slide to the left (negative number)
     }
     currentWebPage = "loading"
-    $(".triangle-page-marker").attr('data-current-page', 'charts');
+    $(".triangle-page-marker").attr('data-current-page', 'charts')
     $("main").css("left", `${slidingSide}110vw`)
     clearInterval(myInterval) // from graph
     setTimeout(() => {
@@ -61,7 +61,7 @@ $("#about-btn").click(() => {
         return
     }
     currentWebPage = "loading"
-    $(".triangle-page-marker").attr('data-current-page', 'about');
+    $(".triangle-page-marker").attr('data-current-page', 'about')
     $("main").css("left", "110vw")
     clearInterval(myInterval) // from graph
     setTimeout(() => {
@@ -246,7 +246,6 @@ let currentCoinsPage = 1
 let coinsPerPage = 100
 let previousSearch;
 let lastRefreshedApiDate;
-let previousMICurrency; // previous more-info currency selection
 
 function fetchData() {
     
@@ -264,7 +263,7 @@ function fetchData() {
         coinsData = data
         console.log(coinsData)
         filteredCoinsData = coinsData
-        lastRefreshedApiDate = new Date();
+        lastRefreshedApiDate = new Date()
 
         if (currentWebPage == "home") {
             if ($(".search-and-fetchBtn-container").length) { // if element exists:
@@ -285,7 +284,7 @@ function timePassedSinceFetch(miliseconds) {
     msPassed = new Date(miliseconds)
     if (msPassed < 1000) {
         tooltip.text("Last refreshed: now.")
-        return;
+        return
     }
     // 24 hours = 86400000 miliseconds
     if (msPassed < 86400000) {
@@ -439,66 +438,95 @@ function previousPageArrow() {
 // #endregion
     // #region || moreinfo slider
 
+let previousMICurrency = "usd"; // previous more-info selected currency
+
 function moreInfoBtn(btnId) {
     let btn = $(`#button${btnId}`)
 
     // check if slider already open
     if (btn.next().css("display") != "none") {
-        btn.next().slideToggle(300);
+        btn.next().slideToggle(300)
         return
     }
     
     // open slider menu with loading gif
     btn.next().html(`<img class="loading" src="./img/loading.gif" alt="loadingIMG">`);
-    btn.next().slideToggle(300);
+    btn.next().slideToggle(300)
     
     // coin name corresponding to the button clicked (<h3>)
     let name = btn.parent().children().first().next().text()
     console.log(`name: ${name}`)
-    let index = coinsData.findIndex(each => each.name === name); 
+    let index = coinsData.findIndex(each => each.name === name)
+    // https://api.coingecko.com/api/v3/coins/aag-ventures  aag
     const url = `https://api.coingecko.com/api/v3/coins/${coinsData[index].id}`
+    console.log(`fetching from url: ${url}`)
     
     $.get(url, (data) => {
-        console.log(data)
-        editSliderContent(btn, data)
+        editSliderContent(btn, data, true)
+    }).fail(() => {
+        editSliderContent(btn, 0, false)
     })
 }
 
 // btnElement must be jquery element
-function editSliderContent(btnElement, coinObject) {
+// success = true if fetching worked
+function editSliderContent(btnElement, coinObject, success) {
     let sliderElement = btnElement.next()
-
-    sliderElement.html(`
-        <img class="coin-image" src=${coinObject.image.large} alt="coin logo">
-        <h4>Value: <span class="coin-current-price"></span></h4>
-        <select class="select-currencies">
-        </select>
-    `)
-
-    let selectElement = sliderElement.children(".select-currencies")
-    
-    selectElement.on("change", updateCoinValue)
-    let currenciesArr = Object.keys(coinObject.market_data.current_price) // returns array with USD, ILS, EUR, etc.
-    for(let each of currenciesArr) {
-        if (each == "usd") {
-            selectElement.append(`<option value="${each}" selected>${each.toUpperCase()}</option>`)
-            continue
-        }
-        selectElement.append(`<option value="${each}">${each.toUpperCase()}</option>`)
+    if (success === false) {
+        sliderElement.html(`
+            <br>
+            <h4>Failed to fetch data. Try again.</h4>
+        `)
+        return
     }
 
-    updateCoinValue()
+    const currenciesArr = Object.keys(coinObject.market_data.current_price) // returns array with USD, ILS, EUR, etc.
+    if (!currenciesArr.length) {
+            sliderElement.html(`
+            <img class="coin-image" src=${coinObject.image.large} alt="coin logo">
+            <h4>(unknown coin value)</h4>
+        `)
+    } else {
+        sliderElement.html(`
+            <img class="coin-image" src=${coinObject.image.large} alt="coin logo">
+            <h4>Value: <span class="coin-current-price"></span></h4>
+            <select class="select-currencies">
+            </select>
+        `)
 
-    function updateCoinValue() {
-        let inputValue = selectElement.val()
-        selectElement.prev().children("span").text(coinObject.market_data.current_price[inputValue].toLocaleString('en-US'))
+        let selectElement = sliderElement.children(".select-currencies")
+        
+        selectElement.on("change", updateCoinValue)
+
+        for(let each of currenciesArr) {
+            if (each == previousMICurrency) {
+                selectElement.append(`<option value="${each}" selected>${each.toUpperCase()}</option>`)
+                continue
+            }
+            selectElement.append(`<option value="${each}">${each.toUpperCase()}</option>`)
+        }
+
+        updateCoinValue()
+
+        function updateCoinValue() {
+            let inputValue = selectElement.val()
+            previousMICurrency = inputValue
+            selectElement.prev().children("span").text(coinObject.market_data.current_price[inputValue].toLocaleString('en-US'))
+        }
     }
 }
 
 // #endregion
-    // #region || popup modal
+    // #region || popup modal + toggle checkboxes
 
-    // popup
+let toggledList = [];
+
+//$("#name-checkbox").is(':checked')
+function checkboxClick() {
+
+}
+
+
 
 // #endregion
     // #region || search + mic + api-button
