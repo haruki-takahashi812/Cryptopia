@@ -142,7 +142,7 @@ function createGraph() {
     clearInterval(myInterval)
 
     let timeNow = new Date().toISOString().slice(14,19) // mm:ss
-    
+
     // x-axis
     let labels = [
         timeNow,
@@ -239,13 +239,14 @@ function createGraph() {
 
 // #endregion
 // #region || homepage
-    // #region || fetching, rendering, pagination 
+    // #region || fetching + rendering cards
 let coinsData;
 let filteredCoinsData;
 let currentCoinsPage = 1
 let coinsPerPage = 100
 let previousSearch;
 let lastRefreshedApiDate;
+let previousMICurrency; // previous more-info currency selection
 
 function fetchData() {
     
@@ -315,14 +316,20 @@ function renderCards() {
             <div class="card">
                 <h2>${i + 1}. <span class="symbol">${filteredCoinsData[i].symbol}</span></h2>
                 <h3>${filteredCoinsData[i].name}</h3>
-                <button onclick="moreInfoBtn(event)">More Info</button>
                 <input type="checkbox" id="checkbox${i}" />
                 <label for="checkbox${i}"></label>
+                <button id="button${i}" onclick="moreInfoBtn(${i})">More Info</button>
+                <div class="more-info-container">
+
+                </div>
             </div>
         `)
 
     }
 }
+
+// #endregion
+    // #region || pagination
 
 function createPagination() {
     if (!filteredCoinsData.length) { // if array is empty:
@@ -430,68 +437,68 @@ function previousPageArrow() {
 }
 
 // #endregion
-    // #region || moreinfo button + popup
+    // #region || moreinfo slider
 
-function moreInfoBtn(e) {
-    
-    // coin symbol corresponding to the button clicked
-    let symbol = e.target.parentElement.firstElementChild.firstElementChild.innerText
-    
-    showPopupMenu(symbol)
+function moreInfoBtn(btnId) {
+    let btn = $(`#button${btnId}`)
 
-    let index = coinsData.findIndex(each => each.symbol === symbol); 
+    // check if slider already open
+    if (btn.next().css("display") != "none") {
+        btn.next().slideToggle(300);
+        return
+    }
     
+    // open slider menu with loading gif
+    btn.next().html(`<img class="loading" src="./img/loading.gif" alt="loadingIMG">`);
+    btn.next().slideToggle(300);
+    
+    // coin name corresponding to the button clicked (<h3>)
+    let name = btn.parent().children().first().next().text()
+    console.log(`name: ${name}`)
+    let index = coinsData.findIndex(each => each.name === name); 
     const url = `https://api.coingecko.com/api/v3/coins/${coinsData[index].id}`
     
     $.get(url, (data) => {
         console.log(data)
-        editPopupMenuContents(data)
+        editSliderContent(btn, data)
     })
 }
 
-function showPopupMenu(symbol) {
-    $(".popup-body").html(`<img class="loading" src="./img/loading.gif" alt="loadingIMG">`)
-    $(".popup-menu-title").text(symbol)
-    $(".popup-dark-overlay").css("display", "flex")
-}
+// btnElement must be jquery element
+function editSliderContent(btnElement, coinObject) {
+    let sliderElement = btnElement.next()
 
-function editPopupMenuContents(coinObject) {
-
-    $(".popup-body").html(`
+    sliderElement.html(`
         <img class="coin-image" src=${coinObject.image.large} alt="coin logo">
-        <h4>Current Price: <span class="coin-current-price"></span></h4>
+        <h4>Value: <span class="coin-current-price"></span></h4>
         <select class="select-currencies">
         </select>
     `)
-    $(".select-currencies").on("change", updateCoinValue)
+
+    let selectElement = sliderElement.children(".select-currencies")
+    
+    selectElement.on("change", updateCoinValue)
     let currenciesArr = Object.keys(coinObject.market_data.current_price) // returns array with USD, ILS, EUR, etc.
     for(let each of currenciesArr) {
         if (each == "usd") {
-            $(".select-currencies").append(`<option value="${each}" selected>${each.toUpperCase()}</option>`)
+            selectElement.append(`<option value="${each}" selected>${each.toUpperCase()}</option>`)
             continue
         }
-        $(".select-currencies").append(`<option value="${each}">${each.toUpperCase()}</option>`)
+        selectElement.append(`<option value="${each}">${each.toUpperCase()}</option>`)
     }
+
     updateCoinValue()
 
     function updateCoinValue() {
-        let inputValue = $(".select-currencies").val()
-        $(".coin-current-price").text(coinObject.market_data.current_price[inputValue].toLocaleString('en-US'))
+        let inputValue = selectElement.val()
+        selectElement.prev().children("span").text(coinObject.market_data.current_price[inputValue].toLocaleString('en-US'))
     }
 }
 
-$(".popup-exit-button").click(closePopupMenu)
+// #endregion
+    // #region || popup modal
 
-function closePopupMenu() {
-    $(".popup-dark-overlay").css("display", "none")
-    $(".popup-menu-title").text("")
-}
-
-$(".popup-dark-overlay").click(e => {
-    if (e.target === e.currentTarget) {
-        closePopupMenu();
-    }
-})
+    // popup
 
 // #endregion
     // #region || search + mic + api-button
@@ -729,5 +736,4 @@ $(document).on("keydown", function(e) {
 fetchData()
 
 // #endregion
-
 
