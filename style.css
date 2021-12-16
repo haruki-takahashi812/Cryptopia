@@ -519,10 +519,11 @@ main {
 	display: grid;
 	justify-content: center;
 	grid-template-columns: repeat(auto-fill, 280px);
-	grid-auto-rows: 200px;
 }
 
 .card {
+    min-height: 200px;
+    height: max-content;
     overflow: hidden;
     background-color: white;
     border-radius: 15px;
@@ -533,7 +534,7 @@ main {
 .card h2 {
     font-size: 20px;
     font-weight: 700;
-    max-width: 200px;
+    max-width: 205px;
     position: relative;
     top: 10px;
     left: 10px;
@@ -565,6 +566,48 @@ main {
     bottom: 10px;
 }
 
+            /* #region || more-info slider */
+.more-info-container {
+    display: none;
+    margin: 35px 10px 30px 10px !important; /* override jquery animation */
+    height: 150px;
+}
+
+.more-info-container .loading {
+    display: block;
+    margin: auto;
+    height: 80px;
+    width: 80px;
+}
+
+.more-info-container .coin-image {
+    display: block;
+    margin: auto;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border-radius: 100%;
+}
+
+.more-info-container h4 {
+    display: inline-block;
+    font-size: 14px;
+}
+
+.more-info-container span {
+    color:rgb(36, 145, 60);
+}
+
+.more-info-container select {
+    font-size: 14px;
+    border: 2px solid black;
+    border-radius: 6px;
+    padding: 3px;
+    margin-bottom: 30px;
+}
+
+/* #endregion */
             /* #region || checkbox */
 
 .card input[type="checkbox"] {
@@ -614,7 +657,7 @@ main {
 
 /* #endregion */
 /* #endregion */
-        /* #region || moreinfo popup */
+        /* #region || popup modal */
 
 .popup-dark-overlay {
     display: none;
