@@ -440,6 +440,7 @@ main {
     justify-content: center;
     justify-items: center;
     user-select: none;
+    margin-bottom: 25px;
 }
 
 .page-number {
@@ -610,11 +611,11 @@ main {
 /* #endregion */
             /* #region || checkbox */
 
-.card input[type="checkbox"] {
+.card-checkbox-input {
 	display: none;
 }
 
-.card label {
+.card-checkbox-label {
 	cursor: pointer;
 	width: 50px;
 	height: 30px;
@@ -626,7 +627,7 @@ main {
     top: 10px;
 }
 
-.card label:after {
+.card-checkbox-label:after {
 	content: '';
 	position: absolute;
 	top: 2.5px;
@@ -638,20 +639,20 @@ main {
 	transition: 0.3s;
 }
 
-.card input:checked ~ label {
+.card-checkbox-input:checked ~ .card-checkbox-label {
 	background-color: var(--lightblue);
 }
 
-.card input:checked ~ label:after {
+.card-checkbox-input:checked ~ .card-checkbox-label:after {
 	left: calc(100% - 2.5px);
 	transform: translateX(-100%);
 }
 
-.card label:active:after {
+.card-checkbox-label:active:after {
 	transform: translateX(18%);
 }
 
-.card input:checked ~ label:active:after {
+.card-checkbox-input:checked ~ .card-checkbox-label:active:after {
 	transform: translateX(-118%);
 }
 
@@ -674,8 +675,9 @@ main {
 
 .popup-container {
     min-height: 250px;
-    max-width: 450px;
-    flex-grow: 1;
+    /* max-width: 450px; */
+    min-width: 450px;
+    /* flex-grow: 1; */
     padding: 20px;
     overflow: auto;
     border-radius: 10px;
@@ -686,8 +688,13 @@ main {
 .popup-container .popup-header {
     display: flex;
     justify-content: space-between;
-    align-content: center;
+    align-items: center;
     margin-bottom: 20px;
+}
+
+.popup-container h1 {
+    font-size: 17px;
+    font-weight: 700;
 }
 
 .popup-container .popup-exit-button {
@@ -704,40 +711,28 @@ main {
     background-color: rgb(223, 113, 113);
 }
 
-.popup-container .popup-menu-title {
-    margin: 0;
+.popup-body {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 15px;
 }
 
-.popup-body .loading {
+.flex-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.popup-body p {
+    font-size: 16px;
     display: block;
-    margin: auto;
-    margin-top: 10px;
-    height: 100px;
-    width: 100px;
+    margin-right: 8px;
 }
 
-.popup-body .coin-image {
-    display: block;
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin-bottom: 15px;
-    border-radius: 100%;
-}
-
-.popup-body h4 {
-    display: inline-block;
-}
-
-.popup-body span {
-    color:rgb(36, 145, 60);
-}
-
-.popup-body select {
-    font-size: 14px;
-    border: 2px solid black;
-    border-radius: 6px;
-    padding: 3px;
+.popup-body .card-checkbox-label {
+    position: relative;
+    min-width: 50px;
+    top: unset;
+    right: unset;
 }
 
 /* #endregion */

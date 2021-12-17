@@ -313,17 +313,19 @@ function renderCards() {
         // if 100 per page, currentpage 1: index will loop 0-99 , currentpage 2: index will loop 100-199
         $(".cardsContainer").append(`
             <div class="card">
-                <h2>${i + 1}. <span class="symbol">${filteredCoinsData[i].symbol}</span></h2>
+                <h2>${i + 1}. <span class="symbol">${filteredCoinsData[i].symbol.toUpperCase()}</span></h2>
                 <h3>${filteredCoinsData[i].name}</h3>
-                <input type="checkbox" id="checkbox${i}" />
-                <label for="checkbox${i}"></label>
+                <input class="card-checkbox-input" type="checkbox" id="checkbox${filteredCoinsData[i].id}" onclick="checkboxClick('${filteredCoinsData[i].id}', '${filteredCoinsData[i].symbol}', false)">
+                <label class="card-checkbox-label" for="checkbox${filteredCoinsData[i].id}"></label>
                 <button id="button${i}" onclick="moreInfoBtn(${i})">More Info</button>
-                <div class="more-info-container">
-
-                </div>
+                <div class="more-info-container"></div>
             </div>
         `)
-
+        // true if array includes id
+        const myBoolean = toggledList.some(each => each.id === filteredCoinsData[i].id)
+        if (myBoolean) {
+            $(`#checkbox${filteredCoinsData[i].id}`).prop("checked", true) 
+        }
     }
 }
 
@@ -517,16 +519,90 @@ function editSliderContent(btnElement, coinObject, success) {
 }
 
 // #endregion
-    // #region || popup modal + toggle checkboxes
+    // #region || toggle checkboxes + popup modal
 
 let toggledList = [];
 
-//$("#name-checkbox").is(':checked')
-function checkboxClick() {
-
+function checkboxClick(coinID, coinSymbol, isPopup) {
+    // if checkbox is not from popup menu
+    if (!isPopup) {
+        // if toggled on:
+        if ($(`#checkbox${coinID}`).is(":checked")) {
+            if (toggledList.length >= 5) {
+                console.log("over 5, unchecked")
+                $(`#checkbox${coinID}`).prop("checked", false)
+                showPopupMenu(coinID, coinSymbol)
+            } else {
+                // true if array includes id
+                const myBoolean = toggledList.some(each => each.id === coinID)
+                if (!myBoolean) {
+                    toggledList.push({id: coinID, symbol: coinSymbol})
+                }
+            }
+        } else { // if toggled off:
+            // remove id from list if its there
+            toggledList = toggledList.filter(each => each.id !== coinID )
+        }
+    } else { // if checkbox was in popup menu:
+        console.log("in popup")
+        // if toggled on:
+        if ($(`#p-checkbox${coinID}`).is(":checked")) {
+            console.log("TOGGLED ON ->>")
+            if (toggledList.length >= 5) {
+                console.log("over 5, unchecked")
+                $(`#p-checkbox${coinID}`).prop("checked", false)
+            } else {
+                // sync non-popup checkbox
+                $(`#checkbox${coinID}`).prop("checked", true)
+                // true if array includes id
+                const myBoolean = toggledList.some(each => each.id === coinID)
+                if (!myBoolean) {
+                    toggledList.push({id: coinID, symbol: coinSymbol})
+                }
+            }
+        } else { // if toggled off:
+            console.log("TOGGLED OFF ->>")
+            // sync non-popup checkbox 
+            $(`#checkbox${coinID}`).prop("checked", false)
+            // remove id from list if its there
+            toggledList = toggledList.filter(each => each.id !== coinID )
+        }
+        
+    }
 }
 
+function showPopupMenu(coinID, coinSymbol) {
+    $(".popup-body").html("")
+    for (let i = 0; i < toggledList.length; i++) {
+        $(".popup-body").append(`
+            <div class="flex-row">
+                <p>${toggledList[i].symbol.toUpperCase()}</p>
+                <input checked class="card-checkbox-input" type="checkbox" id="p-checkbox${toggledList[i].id}" onclick="checkboxClick('${toggledList[i].id}', '${toggledList[i].symbol}', true)">
+                <label class="card-checkbox-label" for="p-checkbox${toggledList[i].id}"></label>
+            </div>
+        `)
+    }
+    $(".popup-body").append(`
+        <div class="flex-row">
+            <p>${coinSymbol.toUpperCase()}</p>
+            <input class="card-checkbox-input" type="checkbox" id="p-checkbox${coinID}" onclick="checkboxClick('${coinID}', '${coinSymbol}', true)">
+            <label class="card-checkbox-label" for="p-checkbox${coinID}"></label>
+        </div>
+    `)
+    $(".popup-dark-overlay").css("display", "flex")
+}
 
+function closePopupMenu() {
+    $(".popup-dark-overlay").css("display", "none")
+}
+
+$(".popup-exit-button").click(closePopupMenu)
+
+$(".popup-dark-overlay").click(e => {
+    if (e.target === e.currentTarget) {
+        closePopupMenu();
+    }
+})
 
 // #endregion
     // #region || search + mic + api-button
