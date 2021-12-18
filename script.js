@@ -88,17 +88,27 @@ function renderHomePage() {
 }
 
 function renderChartsPage() {
-    $("main").html(`
-    <div class="chart-container">
-        <div class="chart">
-            <canvas id="myChart"></canvas>
-        </div>
-        <button id="create-graph-btn">Reload Graph</button>
-        <button id="stop-interval-btn">Stop Interval</button>
-    </div>
-    `)
-    $("#create-graph-btn").click(createGraph)
-    createGraph()
+    if (toggledList.length > 0) {
+        $("main").html(`
+            <div class="chart-container">
+                <div class="chart">
+                    <canvas id="myChart"></canvas>
+                </div>
+                <button id="create-graph-btn">Reload Graph</button>
+                <button id="stop-interval-btn">Stop Interval</button>
+            </div>
+        `)
+        $("#create-graph-btn").click(createGraph)
+        createGraph()
+    } else {
+        $("main").html(`
+            <div class="chart-container">
+                <div class="chart">
+                    <h1 style="padding: 10px;">To see live reports, select coins from the homepage.</h1>
+                </div>
+            </div>
+        `)
+    }
 }
 
 function renderAboutPage() {
@@ -137,9 +147,20 @@ function renderAboutPage() {
 
 let chart = undefined;
 let myInterval;
+let graphColors = ["blue", "red", "limegreen", "purple", "dodgerblue"]
+let toggledListData = []
+let intervalTime = 2000;
 
 function createGraph() {
+    // if chart exists, delete it
+    if (typeof chart == "object") {
+        chart.destroy()
+    }
     clearInterval(myInterval)
+    if (toggledList < 1) {
+        console.log("pls toggle coins at home page")
+        return
+    }
 
     let timeNow = new Date().toISOString().slice(14,19) // mm:ss
 
@@ -152,26 +173,45 @@ function createGraph() {
         labels,
         // y-axis
         datasets: [
-            {
-            label: "something1",
-            backgroundColor: 'white', // points color
-            borderColor: 'blue', // line color
-            data: [123, 432, 120, 14, 1023, 500, 344],
-            },
-            {
-            label: "something2",
-            backgroundColor: 'white',
-            borderColor: 'limegreen',
-            data: [323, 132, 220, 124, 23, 400, 144],
-            },
-            {
-            label: "something3",
-            backgroundColor: 'white',
-            borderColor: 'red',
-            data: [400, 300, 200, 400, 800, 1000, 354],
-            },
+            // {
+            // label: "something1",
+            // backgroundColor: 'white', // points color
+            // borderColor: 'blue', // line color
+            // data: [123, 432, 120, 14, 1023, 500, 344],
+            // },
+            // {
+            // label: "something2",
+            // backgroundColor: 'white',
+            // borderColor: 'limegreen',
+            // data: [323, 132, 220, 124, 23, 400, 144],
+            // },
+            // {
+            // label: "something3",
+            // backgroundColor: 'white',
+            // borderColor: 'red',
+            // data: [400, 300, 200, 400, 800, 1000, 354],
+            // },
         ]
     }
+    
+    toggledListData = []
+    let toggledListSymbols = toggledList.map(i => i.symbol.toUpperCase())
+    const _url = `https://min-api.cryptocompare.com/data/pricemulti?fsyms=${toggledListSymbols}&tsyms=USD`
+
+    $.get(_url, (_data) => {
+        Object.keys(_data).forEach( key => {
+            toggledListData.push({ symbol: key, value: _data[key].USD })
+        })
+        console.log(toggledListData)
+        for (let i = 0; i < toggledListData.length; i++) {
+            data.datasets.push({
+                label: toggledListData[i].symbol,
+                backgroundColor: 'white',
+                borderColor: graphColors[i],
+                data: [toggledListData[i].value],
+            })
+        }
+    })
 
     const config = {
         type: "line",
@@ -190,7 +230,7 @@ function createGraph() {
                 y: {
                     ticks: {
                         callback: function(value){
-                            return "$" + value + "m";
+                            return "$" + value;
                         }
                     },
                     title: {
@@ -215,24 +255,28 @@ function createGraph() {
                 },
                 title: {
                     display: true,
-                    text: 'Live Chart'
+                    text: toggledListSymbols + " to USD"
                 }
             }
         }
     }
     
-    // if chart exists, delete it
-    if (typeof chart == "object") {
-        chart.destroy()
-    }
     chart = new Chart($("#myChart"), config);
 
     myInterval = setInterval(() => {
         let timeNow = new Date().toISOString().slice(14,19) // mm:ss
         labels.push(`${timeNow}`)
-        console.log(labels)
-        chart.update()
-    }, 2000);
+        $.get(_url, (_data) => {
+            let updatedData = []
+            Object.keys(_data).forEach( key => {
+                updatedData.push({ symbol: key, value: _data[key].USD })
+            })
+            for (let i = 0; i < toggledListData.length; i++) {
+                data.datasets[i].data.push(updatedData[i].value)
+            }
+            chart.update()
+        })
+    }, intervalTime);
     
     $("#stop-interval-btn").click(()=>{clearInterval(myInterval)})
 }
@@ -457,9 +501,7 @@ function moreInfoBtn(btnId) {
     
     // coin name corresponding to the button clicked (<h3>)
     let name = btn.parent().children().first().next().text()
-    console.log(`name: ${name}`)
     let index = coinsData.findIndex(each => each.name === name)
-    // https://api.coingecko.com/api/v3/coins/aag-ventures  aag
     const url = `https://api.coingecko.com/api/v3/coins/${coinsData[index].id}`
     console.log(`fetching from url: ${url}`)
     
@@ -512,8 +554,19 @@ function editSliderContent(btnElement, coinObject, success) {
 
         function updateCoinValue() {
             let inputValue = selectElement.val()
+            let coinValue = coinObject.market_data.current_price[inputValue].toLocaleString('en-US')
+            let coinValueTextElement = selectElement.prev().children("span")
             previousMICurrency = inputValue
-            selectElement.prev().children("span").text(coinObject.market_data.current_price[inputValue].toLocaleString('en-US'))
+
+            if (inputValue == "usd") {
+                coinValueTextElement.text("$" + coinValue)
+            } else if (inputValue == "eur") {
+                coinValueTextElement.text("€" + coinValue)
+            } else if (inputValue == "ils") {
+                coinValueTextElement.text(coinValue + "₪")
+            } else {
+                coinValueTextElement.text(coinValue)
+            }
         }
     }
 }
