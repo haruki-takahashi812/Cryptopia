@@ -158,7 +158,6 @@ function createGraph() {
     }
     clearInterval(myInterval)
     if (toggledList < 1) {
-        console.log("pls toggle coins at home page")
         return
     }
 
@@ -197,8 +196,16 @@ function createGraph() {
     toggledListData = []
     let toggledListSymbols = toggledList.map(i => i.symbol.toUpperCase())
     const _url = `https://min-api.cryptocompare.com/data/pricemulti?fsyms=${toggledListSymbols}&tsyms=USD`
+    console.log(`fetching from url: ${_url}`)
 
     $.get(_url, (_data) => {
+        if (_data.Response == "Error") {
+            console.log("error in fetching occured, select different coins")
+            $(".chart").html(`
+                    <h1 style="padding: 10px;">Error in fetching, please select different coins.</h1>
+            `)
+            return
+        }
         Object.keys(_data).forEach( key => {
             toggledListData.push({ symbol: key, value: _data[key].USD })
         })
@@ -211,74 +218,74 @@ function createGraph() {
                 data: [toggledListData[i].value],
             })
         }
-    })
-
-    const config = {
-        type: "line",
-        data: data,
-        options: {
-            animation: false,
-            elements: {
-                point: {
-                    radius: 2,
+        const config = {
+            type: "line",
+            data: data,
+            options: {
+                animation: false,
+                elements: {
+                    point: {
+                        radius: 2,
+                    },
+                    line: {
+                        borderWidth: 1,
+                    }
                 },
-                line: {
-                    borderWidth: 1,
-                }
-            },
-            scales: {
-                y: {
-                    ticks: {
-                        callback: function(value){
-                            return "$" + value;
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: function(value){
+                                return "$" + value;
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: "Coin Value",
+                        },
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Time (mm:ss)",
+                        },
+                    },
+                },
+                plugins: {
+                    legend: {
+                        position:"right",
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: "rectRounded",
                         }
                     },
                     title: {
                         display: true,
-                        text: "Coin Value",
-                    },
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: "Time (mm:ss)",
-                    },
-                },
-            },
-            plugins: {
-                legend: {
-                    position:"right",
-                    labels: {
-                        usePointStyle: true,
-                        pointStyle: "rectRounded",
+                        text: toggledListSymbols + " to USD"
                     }
-                },
-                title: {
-                    display: true,
-                    text: toggledListSymbols + " to USD"
                 }
             }
         }
-    }
+        
+        chart = new Chart($("#myChart"), config);
     
-    chart = new Chart($("#myChart"), config);
-
-    myInterval = setInterval(() => {
-        let timeNow = new Date().toISOString().slice(14,19) // mm:ss
-        labels.push(`${timeNow}`)
-        $.get(_url, (_data) => {
-            let updatedData = []
-            Object.keys(_data).forEach( key => {
-                updatedData.push({ symbol: key, value: _data[key].USD })
+        myInterval = setInterval(() => {
+            let timeNow = new Date().toISOString().slice(14,19) // mm:ss
+            labels.push(`${timeNow}`)
+            $.get(_url, (_data) => {
+                let updatedData = []
+                Object.keys(_data).forEach( key => {
+                    updatedData.push({ symbol: key, value: _data[key].USD })
+                })
+                for (let i = 0; i < toggledListData.length; i++) {
+                    data.datasets[i].data.push(updatedData[i].value)
+                }
+                chart.update()
             })
-            for (let i = 0; i < toggledListData.length; i++) {
-                data.datasets[i].data.push(updatedData[i].value)
-            }
-            chart.update()
-        })
-    }, intervalTime);
-    
-    $("#stop-interval-btn").click(()=>{clearInterval(myInterval)})
+        }, intervalTime);
+        
+        $("#stop-interval-btn").click(()=>{clearInterval(myInterval)})
+    })
+
 }
 
 // #endregion
@@ -361,7 +368,7 @@ function renderCards() {
                 <h3>${filteredCoinsData[i].name}</h3>
                 <input class="card-checkbox-input" type="checkbox" id="checkbox${filteredCoinsData[i].id}" onclick="checkboxClick('${filteredCoinsData[i].id}', '${filteredCoinsData[i].symbol}', false)">
                 <label class="card-checkbox-label" for="checkbox${filteredCoinsData[i].id}"></label>
-                <button id="button${i}" onclick="moreInfoBtn(${i})">More Info</button>
+                <button id="button${filteredCoinsData[i].id}" onclick="moreInfoBtn('${filteredCoinsData[i].id}')">More Info</button>
                 <div class="more-info-container"></div>
             </div>
         `)
@@ -485,31 +492,50 @@ function previousPageArrow() {
     // #region || moreinfo slider
 
 let previousMICurrency = "usd"; // previous more-info selected currency
+let hasTimeNotPassed = {} // 
 
-function moreInfoBtn(btnId) {
-    let btn = $(`#button${btnId}`)
+if (localStorage.getItem("moreInfoDataKey") === null) {
+    localStorage.setItem("moreInfoDataKey", "{}");
+}
+
+let moreInfoDataLS = JSON.parse(localStorage.getItem("moreInfoDataKey"));
+
+function moreInfoBtn(btnID) {
+    let btn = $(`#button${btnID}`)
 
     // check if slider already open
     if (btn.next().css("display") != "none") {
         btn.next().slideToggle(300)
         return
     }
-    
-    // open slider menu with loading gif
-    btn.next().html(`<img class="loading" src="./img/loading.gif" alt="loadingIMG">`);
-    btn.next().slideToggle(300)
-    
-    // coin name corresponding to the button clicked (<h3>)
-    let name = btn.parent().children().first().next().text()
-    let index = coinsData.findIndex(each => each.name === name)
-    const url = `https://api.coingecko.com/api/v3/coins/${coinsData[index].id}`
-    console.log(`fetching from url: ${url}`)
-    
-    $.get(url, (data) => {
-        editSliderContent(btn, data, true)
-    }).fail(() => {
-        editSliderContent(btn, 0, false)
-    })
+
+    if (!hasTimeNotPassed[btnID]) {
+        // open slider menu with loading gif
+        btn.next().html(`<img class="loading" src="./img/loading.gif" alt="loadingIMG">`);
+        btn.next().slideToggle(300)
+            
+        const url = `https://api.coingecko.com/api/v3/coins/${btnID}`
+        console.log(`fetching from url: ${url}`)
+
+        $.get(url, (data) => {
+            console.log(data)
+            editSliderContent(btn, data, true)
+            moreInfoDataLS[btnID] = data
+            localStorage.setItem("moreInfoDataKey", JSON.stringify(moreInfoDataLS));
+            hasTimeNotPassed[btnID] = true;
+            setTimeout(()=>{
+                hasTimeNotPassed[btnID] = false;
+            }, 120000)
+        }).fail(() => {
+            editSliderContent(btn, 0, false)
+        })
+    } else {
+        console.log("fetching from localstorage")
+        let data_ = moreInfoDataLS[btnID]
+        console.log(data_)
+        editSliderContent(btn, data_, true)
+        btn.next().slideToggle(300)
+    }
 }
 
 // btnElement must be jquery element
@@ -597,12 +623,9 @@ function checkboxClick(coinID, coinSymbol, isPopup) {
             toggledList = toggledList.filter(each => each.id !== coinID )
         }
     } else { // if checkbox was in popup menu:
-        console.log("in popup")
         // if toggled on:
         if ($(`#p-checkbox${coinID}`).is(":checked")) {
-            console.log("TOGGLED ON ->>")
             if (toggledList.length >= 5) {
-                console.log("over 5, unchecked")
                 $(`#p-checkbox${coinID}`).prop("checked", false)
             } else {
                 // sync non-popup checkbox
@@ -614,7 +637,6 @@ function checkboxClick(coinID, coinSymbol, isPopup) {
                 }
             }
         } else { // if toggled off:
-            console.log("TOGGLED OFF ->>")
             // sync non-popup checkbox 
             $(`#checkbox${coinID}`).prop("checked", false)
             // remove id from list if its there
