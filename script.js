@@ -319,8 +319,6 @@ function fetchData() {
         if (currentWebPage == "home") {
             if ($(".search-and-fetchBtn-container").length) { // if element exists:
                 $(".loading").remove()
-                // renderCards()
-                // createPagination()
                 previousSearch = ""
                 $(".search-btn").trigger("click") // keeping search filter on refresh
             } else {
@@ -492,7 +490,7 @@ function previousPageArrow() {
     // #region || moreinfo slider
 
 let previousMICurrency = "usd"; // previous more-info selected currency
-let hasTimeNotPassed = {} // 
+let hasTimeNotPassed = {} // 2 minute setTimeOut localstorage data instead of fetch
 
 if (localStorage.getItem("moreInfoDataKey") === null) {
     localStorage.setItem("moreInfoDataKey", "{}");

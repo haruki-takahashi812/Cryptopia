@@ -891,7 +891,6 @@ main {
     .about-page-section-1 {
         padding-left: 100px;
         grid-template-columns: 1fr;
-        /* grid-template-rows: 2fr 5fr; */
         grid-template-rows: 2fr 3fr;
         grid-template-areas: 
             "text"
