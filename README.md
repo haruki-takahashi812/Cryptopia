@@ -12,3 +12,4 @@ notes for self:
 - full responsiveness
 - search bar with speech to text
 - currency conversion
+- chart.js comparing live coin values
