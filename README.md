@@ -1,6 +1,5 @@
 # Cryptopia
-Website displaying crypto data.
-Host: https://tamircode.github.io/Cryptopia/
+Website displaying crypto data
 
 notes for self:
 
